@@ -26,10 +26,38 @@ class ResizeObserver {
 window.ResizeObserver = ResizeObserver;
 
 // Mock IntersectionObserver
-class IntersectionObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+class IntersectionObserverMock {
+  readonly root: Element | Document | null = null;
+  readonly rootMargin: string = '0px';
+  readonly thresholds: ReadonlyArray<number> = [];
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] { return []; }
 }
 
-window.IntersectionObserver = IntersectionObserver;
+// @ts-ignore
+window.IntersectionObserver = IntersectionObserverMock as unknown;
+
+// ---------------------------------------------------------------------------
+// Global fetch mock – avoids network calls in unit tests
+// ---------------------------------------------------------------------------
+
+// Override global fetch with a mock that returns predictable data
+// @ts-ignore
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  json: async () => ({
+    systems: [],
+    generators: [],
+    missions: [],
+    shipIdentity: {
+      name: 'Test Ship',
+      type: 'Test Type',
+      imo: 'IMO-TEST',
+      flag: 'Testland',
+      status: 'in-port',
+      currentOperation: 'Testing'
+    }
+  })
+});

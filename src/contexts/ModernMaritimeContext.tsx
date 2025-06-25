@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import { simulationEngine, GeneratorState } from '../simulation';
 import { 
   MaritimeSystem, 
   LearningMission, 
@@ -294,18 +295,38 @@ function modernMaritimeReducer(state: ModernMaritimeState, action: ModernMaritim
           rightPanelOpen: !state.navigation.rightPanelOpen
         }
       };
-
-    case 'UPDATE_GENERATOR':
+      
+    case 'UPDATE_GENERATOR': {
+      const { generatorId, updates } = action.payload;
+      // Use the simulation engine to update the generator state
+      if (generatorId !== 'performance-timer') {
+        try {
+          simulationEngine.updateGeneratorParameters(generatorId, updates as Partial<GeneratorState>);
+          // Get the latest state from the simulation engine
+          const latestState = simulationEngine.getGeneratorState(generatorId);
+          if (latestState) {
+            return {
+              ...state,
+              generators: state.generators.map(gen =>
+                gen.id === generatorId ? { ...gen, ...latestState } : gen
+              )
+            };
+          }
+        } catch (error) {
+          console.error(`Error updating generator ${generatorId}:`, error);
+        }
+      }
+      
+      // Fall back to the original behavior for performance-timer or if engine update failed
       return {
         ...state,
         generators: state.generators.map(gen =>
-          gen.id === action.payload.generatorId
-            ? { ...gen, ...action.payload.updates }
-            : gen
+          gen.id === generatorId ? { ...gen, ...updates } : gen
         )
       };
-
-    case 'RECORD_MISTAKE':
+    }
+    
+    case 'RECORD_MISTAKE': {
       const newMistakeCount = state.performance.mistakeCount + 1;
       const efficiencyPenalty = Math.min(20, newMistakeCount * 5);
       
@@ -318,6 +339,7 @@ function modernMaritimeReducer(state: ModernMaritimeState, action: ModernMaritim
           score: Math.max(0, state.performance.score - 10)
         }
       };
+    }
 
     case 'SET_MOBILE_LAYOUT':
       return { 
@@ -490,6 +512,32 @@ export function ModernMaritimeProvider({ children }: { children: React.ReactNode
   }, []);
 
   const updateGenerator = useCallback((generatorId: string, updates: Partial<GeneratorData>) => {
+    // For start/stop operations, use the simulation engine directly
+    if ('status' in updates) {
+      if (updates.status === 'running') {
+        simulationEngine.startGenerator(generatorId)
+          .then(() => {
+            // Update the UI state after the engine finishes startup
+            dispatch({ type: 'UPDATE_GENERATOR', payload: { generatorId, updates } });
+          })
+          .catch(error => {
+            console.error(`Failed to start generator ${generatorId}:`, error);
+          });
+        return;
+      } else if (updates.status === 'stopped') {
+        simulationEngine.stopGenerator(generatorId)
+          .then(() => {
+            // Update the UI state after the engine finishes shutdown
+            dispatch({ type: 'UPDATE_GENERATOR', payload: { generatorId, updates } });
+          })
+          .catch(error => {
+            console.error(`Failed to stop generator ${generatorId}:`, error);
+          });
+        return;
+      }
+    }
+    
+    // For other parameter updates, dispatch normally
     dispatch({ type: 'UPDATE_GENERATOR', payload: { generatorId, updates } });
   }, []);
 
