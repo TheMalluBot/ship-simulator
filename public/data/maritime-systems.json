@@ -1,0 +1,270 @@
+{
+  "systems": [
+    {
+      "id": "power-chief-101",
+      "number": "101",
+      "name": "Power Chief - Generator Control",
+      "category": "power",
+      "status": "stopped",
+      "priority": 1,
+      "icon": "zap",
+      "description": "Main electrical power generation and distribution control"
+    },
+    {
+      "id": "power-chief-102",
+      "number": "102",
+      "name": "Power Chief - Pump Control",
+      "category": "power",
+      "status": "stopped",
+      "priority": 2,
+      "dependencies": ["power-chief-101"],
+      "icon": "zap",
+      "description": "Pump control and fluid system management for power plant operations"
+    },
+    {
+      "id": "power-chief-103",
+      "number": "103",
+      "name": "Power Chief - Indicator Panel",
+      "category": "power",
+      "status": "stopped",
+      "priority": 3,
+      "dependencies": ["power-chief-101"],
+      "icon": "gauge",
+      "description": "Power system indicators and monitoring displays"
+    },
+    {
+      "id": "electric-power-70",
+      "number": "70",
+      "name": "Electric Power Plant",
+      "category": "power",
+      "status": "stopped",
+      "priority": 2,
+      "icon": "battery",
+      "description": "Central electrical distribution and power management"
+    },
+    {
+      "id": "emergency-power",
+      "number": "99",
+      "name": "Emergency Power Systems",
+      "category": "power",
+      "status": "standby",
+      "priority": 0,
+      "icon": "shield-alert",
+      "description": "Emergency electrical power generation and supply"
+    },
+    {
+      "id": "auto-chief-104",
+      "number": "104",
+      "name": "Auto Chief - Main Engine Control",
+      "category": "propulsion",
+      "status": "stopped",
+      "priority": 1,
+      "dependencies": ["power-chief-101"],
+      "icon": "settings",
+      "description": "Main propulsion engine control and monitoring"
+    },
+    {
+      "id": "ship-propulsion-56",
+      "number": "56",
+      "name": "Ship Propulsion",
+      "category": "propulsion",
+      "status": "stopped",
+      "priority": 2,
+      "dependencies": ["auto-chief-104"],
+      "icon": "rotate-cw",
+      "description": "Propeller control and maneuvering systems"
+    },
+    {
+      "id": "auxiliary-propulsion",
+      "number": "57",
+      "name": "Auxiliary Propulsion",
+      "category": "propulsion",
+      "status": "stopped",
+      "priority": 3,
+      "icon": "wind",
+      "description": "Bow thruster and auxiliary propulsion systems"
+    },
+    {
+      "id": "main-engine-110",
+      "number": "110",
+      "name": "Main Engine - Bridge Control",
+      "category": "propulsion",
+      "status": "stopped",
+      "priority": 4,
+      "dependencies": ["auto-chief-104"],
+      "icon": "ship",
+      "description": "Bridge engine control and monitoring interface"
+    },
+    {
+      "id": "auxiliary-systems-111",
+      "number": "111",
+      "name": "Auxiliary Systems Control",
+      "category": "auxiliary",
+      "status": "stopped",
+      "priority": 5,
+      "icon": "cog",
+      "description": "Auxiliary machinery control and monitoring systems"
+    },
+    {
+      "id": "sea-water-01",
+      "number": "01",
+      "name": "Sea Water System",
+      "category": "fluid",
+      "status": "stopped",
+      "priority": 1,
+      "icon": "waves",
+      "description": "Sea water intake and cooling circulation"
+    },
+    {
+      "id": "fresh-water-10",
+      "number": "10",
+      "name": "Fresh Water System",
+      "category": "fluid",
+      "status": "stopped",
+      "priority": 2,
+      "icon": "droplets",
+      "description": "Fresh water production and distribution"
+    },
+    {
+      "id": "cooling-water-15",
+      "number": "15",
+      "name": "Cooling Water System",
+      "category": "fluid",
+      "status": "stopped",
+      "priority": 3,
+      "dependencies": ["sea-water-01"],
+      "icon": "thermometer",
+      "description": "Engine and equipment cooling water circulation"
+    },
+    {
+      "id": "ballast-system-20",
+      "number": "20",
+      "name": "Ballast System",
+      "category": "fluid",
+      "status": "stopped",
+      "priority": 4,
+      "icon": "scale",
+      "description": "Ballast water management and tank control"
+    },
+    {
+      "id": "fire-protection-30",
+      "number": "30",
+      "name": "Fire Protection",
+      "category": "safety",
+      "status": "standby",
+      "priority": 1,
+      "icon": "flame",
+      "description": "Fire detection and suppression systems"
+    },
+    {
+      "id": "emergency-systems-35",
+      "number": "35",
+      "name": "Emergency Systems",
+      "category": "safety",
+      "status": "standby",
+      "priority": 2,
+      "icon": "siren",
+      "description": "Emergency shutdown and safety systems"
+    },
+    {
+      "id": "alarm-management-40",
+      "number": "40",
+      "name": "Alarm Management",
+      "category": "safety",
+      "status": "running",
+      "priority": 3,
+      "icon": "bell",
+      "description": "Central alarm monitoring and management"
+    }
+  ],
+  "generators": [
+    {
+      "id": "shaft-gen",
+      "name": "Shaft Generator",
+      "type": "shaft",
+      "status": "stopped",
+      "power": 1500,
+      "voltage": 440,
+      "frequency": 60,
+      "load": 0,
+      "temperature": 25,
+      "hours": 12847,
+      "priority": 1,
+      "isSelected": false,
+      "canStart": false,
+      "canStop": false
+    },
+    {
+      "id": "dg1",
+      "name": "Diesel Generator #1",
+      "type": "diesel",
+      "status": "stopped",
+      "power": 2000,
+      "voltage": 440,
+      "frequency": 60,
+      "load": 0,
+      "temperature": 28,
+      "hours": 8542,
+      "priority": 2,
+      "isSelected": false,
+      "canStart": true,
+      "canStop": false
+    },
+    {
+      "id": "dg2",
+      "name": "Diesel Generator #2",
+      "type": "diesel",
+      "status": "stopped",
+      "power": 2000,
+      "voltage": 440,
+      "frequency": 60,
+      "load": 0,
+      "temperature": 26,
+      "hours": 9156,
+      "priority": 3,
+      "isSelected": false,
+      "canStart": true,
+      "canStop": false
+    },
+    {
+      "id": "turbo-gen",
+      "name": "Turbo Generator",
+      "type": "turbo",
+      "status": "stopped",
+      "power": 3000,
+      "voltage": 440,
+      "frequency": 60,
+      "load": 0,
+      "temperature": 32,
+      "hours": 15632,
+      "priority": 4,
+      "isSelected": false,
+      "canStart": false,
+      "canStop": false
+    },
+    {
+      "id": "emergency-gen",
+      "name": "Emergency Generator",
+      "type": "emergency",
+      "status": "standby",
+      "power": 500,
+      "voltage": 440,
+      "frequency": 60,
+      "load": 15,
+      "temperature": 45,
+      "hours": 2847,
+      "priority": 0,
+      "isSelected": true,
+      "canStart": true,
+      "canStop": true
+    }
+  ],
+  "shipIdentity": {
+    "name": "MV Maritime Explorer",
+    "type": "Container Vessel",
+    "imo": "IMO 9123456",
+    "flag": "Liberia",
+    "status": "in-port",
+    "currentOperation": "Cold Ship Startup"
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "missions": [
+    {
+      "id": "cold-ship-startup",
+      "title": "Cold Ship Startup",
+      "difficulty": "beginner",
+      "description": "Learn the complete procedure for starting a ship from cold condition, including emergency power, main generators, and support systems.",
+      "estimatedTime": 15,
+      "category": "Power Systems",
+      "achievements": ["First Startup", "Power Expert", "Safety First"],
+      "steps": [
+        {
+          "id": "step-1",
+          "number": 1,
+          "title": "Start Emergency Generator",
+          "description": "Begin by starting the emergency generator to provide initial electrical power for ship systems.",
+          "hint": "The emergency generator should always be started first in a cold ship condition. Look for the Emergency Power Systems (99) in the system directory.",
+          "theory": "Emergency generators provide essential power for safety systems, lighting, and control circuits during startup. They must be operational before starting main generators for safety reasons.",
+          "targetSystem": "emergency-power",
+          "targetAction": "start",
+          "timeLimit": 120,
+          "isCompleted": false,
+          "isActive": true
+        },
+        {
+          "id": "step-2",
+          "number": 2,
+          "title": "Verify Emergency Power Status",
+          "description": "Check that emergency power is stable and all emergency systems are operational.",
+          "hint": "Monitor the emergency generator status indicators. All should show green (running) status.",
+          "theory": "Before proceeding with main systems, verify emergency power stability to ensure safety systems remain operational throughout the startup process.",
+          "targetSystem": "emergency-power",
+          "targetAction": "verify",
+          "timeLimit": 60,
+          "isCompleted": false,
+          "isActive": false
+        },
+        {
+          "id": "step-3",
+          "number": 3,
+          "title": "Prepare Diesel Generator #1",
+          "description": "Prepare the first diesel generator for startup, including pre-checks and system preparation.",
+          "hint": "Navigate to Power Chief (101) and select Diesel Generator #1. Perform pre-start checks before attempting to start.",
+          "theory": "Diesel generators require proper preparation including cooling water circulation, fuel pressure, and lubrication oil pressure before starting.",
+          "targetSystem": "power-chief-101",
+          "targetAction": "prepare-dg1",
+          "timeLimit": 180,
+          "isCompleted": false,
+          "isActive": false
+        },
+        {
+          "id": "step-4",
+          "number": 4,
+          "title": "Start Diesel Generator #1",
+          "description": "Start the first diesel generator and monitor its parameters during startup.",
+          "hint": "Click the START button for DG1. Monitor voltage, frequency, and temperature during startup sequence.",
+          "theory": "Diesel generator startup involves cranking, ignition, and gradual load acceptance. Monitor all parameters to ensure safe operation.",
+          "targetSystem": "power-chief-101",
+          "targetAction": "start-dg1",
+          "timeLimit": 120,
+          "isCompleted": false,
+          "isActive": false
+        },
+        {
+          "id": "step-5",
+          "number": 5,
+          "title": "Synchronize and Load DG1",
+          "description": "Synchronize DG1 with the electrical grid and gradually apply load.",
+          "hint": "Use the synchronization controls to match voltage and frequency, then close the generator breaker.",
+          "theory": "Generator synchronization ensures voltage, frequency, and phase angle match before connecting to the electrical grid.",
+          "targetSystem": "power-chief-101",
+          "targetAction": "sync-dg1",
+          "timeLimit": 180,
+          "isCompleted": false,
+          "isActive": false
+        },
+        {
+          "id": "step-6",
+          "number": 6,
+          "title": "Start Support Systems",
+          "description": "Activate essential support systems including cooling water and lubrication systems.",
+          "hint": "Start with Sea Water System (01), then Cooling Water System (15). Follow the dependency chain.",
+          "theory": "Support systems must be operational before starting main propulsion. Cooling water prevents overheating of engines and equipment.",
+          "targetSystem": "sea-water-01",
+          "targetAction": "start",
+          "timeLimit": 240,
+          "isCompleted": false,
+          "isActive": false
+        },
+        {
+          "id": "step-7",
+          "number": 7,
+          "title": "Prepare Main Engine Systems",
+          "description": "Prepare the main engine for startup by activating Auto Chief and support systems.",
+          "hint": "Navigate to Auto Chief (104) and ensure all prerequisites are met before enabling main engine control.",
+          "theory": "Main engine preparation requires proper lubrication, cooling, and fuel systems. All support systems must be operational.",
+          "targetSystem": "auto-chief-104",
+          "targetAction": "prepare",
+          "timeLimit": 300,
+          "isCompleted": false,
+          "isActive": false
+        },
+        {
+          "id": "step-8",
+          "number": 8,
+          "title": "System Verification",
+          "description": "Perform final system verification to ensure all systems are operational and ready for normal operations.",
+          "hint": "Check all system status indicators. All critical systems should show green (running) status.",
+          "theory": "System verification ensures all components are operational before declaring the ship ready for departure.",
+          "targetSystem": "alarm-management-40",
+          "targetAction": "verify-all",
+          "timeLimit": 180,
+          "isCompleted": false,
+          "isActive": false
+        }
+      ]
+    },
+    {
+      "id": "main-engine-start",
+      "title": "Main Engine Startup",
+      "difficulty": "intermediate",
+      "description": "Master the complex procedure for starting the main propulsion engine, including all safety checks and monitoring.",
+      "estimatedTime": 20,
+      "prerequisites": ["cold-ship-startup"],
+      "category": "Propulsion Systems",
+      "achievements": ["Engine Expert", "Propulsion Master"],
+      "steps": [
+        {
+          "id": "engine-step-1",
+          "number": 1,
+          "title": "Verify Prerequisites",
+          "description": "Ensure all prerequisite systems are operational before attempting main engine start.",
+          "hint": "Check that power generation, cooling systems, and lubrication are all running properly.",
+          "theory": "Main engine startup requires stable electrical power, adequate cooling, and proper lubrication to prevent damage.",
+          "targetSystem": "auto-chief-104",
+          "targetAction": "verify-prerequisites",
+          "timeLimit": 120,
+          "isCompleted": false,
+          "isActive": true
+        },
+        {
+          "id": "engine-step-2",
+          "number": 2,
+          "title": "Engage Turning Gear",
+          "description": "Engage the turning gear to slowly rotate the main engine before starting.",
+          "hint": "The turning gear ensures the engine isn't seized and helps distribute lubrication.",
+          "theory": "Turning gear operation prevents damage from seized components and ensures proper lubrication distribution before starting.",
+          "targetSystem": "auto-chief-104",
+          "targetAction": "turning-gear",
+          "timeLimit": 180,
+          "isCompleted": false,
+          "isActive": false
+        },
+        {
+          "id": "engine-step-3",
+          "number": 3,
+          "title": "Start Main Engine",
+          "description": "Initiate the main engine startup sequence and monitor all parameters.",
+          "hint": "Follow the proper startup sequence: air start, fuel injection, then monitoring.",
+          "theory": "Main engine startup involves compressed air starting, fuel injection timing, and careful parameter monitoring.",
+          "targetSystem": "auto-chief-104",
+          "targetAction": "start-engine",
+          "timeLimit": 300,
+          "isCompleted": false,
+          "isActive": false
+        }
+      ]
+    },
+    {
+      "id": "bridge-operations",
+      "title": "Bridge Systems Operation",
+      "difficulty": "advanced",
+      "description": "Learn to operate navigation and communication systems from the ship's bridge.",
+      "estimatedTime": 25,
+      "prerequisites": ["cold-ship-startup", "main-engine-start"],
+      "category": "Navigation Systems",
+      "achievements": ["Navigation Expert", "Bridge Master"],
+      "steps": [
+        {
+          "id": "bridge-step-1",
+          "number": 1,
+          "title": "Initialize Navigation Systems",
+          "description": "Start up the electronic chart system (ECDIS) and navigation equipment.",
+          "hint": "ECDIS requires GPS input and chart data to be loaded before operation.",
+          "theory": "Electronic Chart Display and Information Systems provide integrated navigation data for safe passage planning.",
+          "targetSystem": "navigation-bridge",
+          "targetAction": "init-ecdis",
+          "timeLimit": 240,
+          "isCompleted": false,
+          "isActive": true
+        }
+      ]
+    },
+    {
+      "id": "emergency-procedures",
+      "title": "Emergency Response Procedures",
+      "difficulty": "expert",
+      "description": "Master critical emergency procedures including power loss, fire, and flooding scenarios.",
+      "estimatedTime": 30,
+      "prerequisites": ["cold-ship-startup", "main-engine-start", "bridge-operations"],
+      "category": "Safety Systems",
+      "achievements": ["Emergency Expert", "Safety Master", "Crisis Manager"],
+      "steps": [
+        {
+          "id": "emergency-step-1",
+          "number": 1,
+          "title": "Identify Emergency Condition",
+          "description": "Quickly assess and identify the type of emergency from alarm indications.",
+          "hint": "Check the Alarm Management System (40) for active alarms and their priority levels.",
+          "theory": "Rapid emergency identification is crucial for effective response. Alarm systems provide prioritized information.",
+          "targetSystem": "alarm-management-40",
+          "targetAction": "assess-emergency",
+          "timeLimit": 60,
+          "isCompleted": false,
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,982 @@
+/* Accelerated Realism Maritime Trainer Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* Maritime Control Aesthetics */
+.metallic-button {
+  background: linear-gradient(145deg, #64748b, #475569);
+  box-shadow: 
+    inset 2px 2px 4px rgba(255, 255, 255, 0.1),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.metallic-button:hover {
+  box-shadow: 
+    inset 1px 1px 2px rgba(255, 255, 255, 0.15),
+    inset -1px -1px 2px rgba(0, 0, 0, 0.4),
+    0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.metallic-button:active {
+  box-shadow: 
+    inset 3px 3px 6px rgba(0, 0, 0, 0.4),
+    inset -1px -1px 2px rgba(255, 255, 255, 0.05);
+}
+
+/* LED Status Indicators */
+.led-indicator {
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent);
+  position: relative;
+}
+
+.led-indicator::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 30%;
+  height: 30%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  filter: blur(1px);
+}
+
+/* Digital Display Font */
+.maritime-display {
+  font-family: 'Orbitron', 'Courier New', monospace;
+  text-shadow: 0 0 4px currentColor;
+  letter-spacing: 0.05em;
+}
+
+/* Progress Bars */
+.startup-progress {
+  background: linear-gradient(90deg, 
+    #3b82f6 0%, 
+    #06b6d4 25%, 
+    #10b981 50%, 
+    #f59e0b 75%, 
+    #ef4444 100%);
+  box-shadow: 
+    0 0 8px rgba(59, 130, 246, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: width 0.5s ease-in-out;
+}
+
+/* Emergency Stop Button */
+.emergency-stop-mushroom {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(145deg, #dc2626, #b91c1c);
+  border: 6px solid #7f1d1d;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 11px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 16px rgba(220, 38, 38, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.emergency-stop-mushroom::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border: 3px solid #fbbf24;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    #fbbf24 0deg 10deg,
+    transparent 10deg 20deg
+  );
+  opacity: 0.6;
+  z-index: -1;
+}
+
+.emergency-stop-mushroom:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 12px 24px rgba(220, 38, 38, 0.6),
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.emergency-stop-mushroom:active {
+  transform: scale(0.95);
+  box-shadow: 
+    0 4px 8px rgba(220, 38, 38, 0.3),
+    inset 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Maritime Control Panels */
+.control-panel {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 2px solid #475569;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Gauge Backgrounds */
+.gauge-background {
+  background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+  border: 3px solid #475569;
+  border-radius: 50%;
+  position: relative;
+}
+
+.gauge-background::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Industrial Switch Styling */
+.industrial-switch {
+  background: linear-gradient(145deg, #374151, #1f2937);
+  border: 2px solid #6b7280;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.industrial-switch:hover {
+  border-color: #9ca3af;
+  box-shadow: 0 0 8px rgba(156, 163, 175, 0.3);
+}
+
+.industrial-switch.active {
+  background: linear-gradient(145deg, #059669, #047857);
+  border-color: #10b981;
+  box-shadow: 
+    0 0 12px rgba(16, 185, 129, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Valve Control Styling */
+.valve-control {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(145deg, #6b7280, #4b5563);
+  border: 4px solid #374151;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.valve-control::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60%;
+  height: 4px;
+  background: #1f2937;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+  transition: transform 0.3s ease;
+}
+
+.valve-control.open::before {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.valve-control:hover {
+  box-shadow: 0 0 16px rgba(107, 114, 128, 0.4);
+}
+
+/* Temperature/Pressure Indicator Colors */
+.temp-normal { color: #10b981; }
+.temp-warning { color: #f59e0b; }
+.temp-critical { color: #ef4444; }
+
+.pressure-normal { color: #3b82f6; }
+.pressure-warning { color: #f59e0b; }
+.pressure-critical { color: #ef4444; }
+
+/* Alert Animations */
+@keyframes alert-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.alert-pulse {
+  animation: alert-pulse 1s ease-in-out infinite;
+}
+
+/* Maritime Navigation Colors */
+.nav-green { color: #10b981; }
+.nav-red { color: #ef4444; }
+.nav-white { color: #f8fafc; }
+.nav-amber { color: #f59e0b; }
+
+/* Professional Typography */
+.maritime-heading {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.system-status {
+  font-family: 'Orbitron', monospace;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Interactive Feedback */
+.haptic-feedback {
+  transition: all 0.1s ease;
+}
+
+.haptic-feedback:active {
+  transform: scale(0.98);
+}
+
+/* Background Textures */
+.maritime-texture {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* 3D Panel Effects */
+.panel-3d {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  box-shadow: 
+    20px 20px 40px rgba(0, 0, 0, 0.4),
+    -20px -20px 40px rgba(55, 65, 81, 0.1),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.05),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+  .emergency-stop-mushroom {
+    width: 80px;
+    height: 80px;
+    font-size: 9px;
+  }
+  
+  .valve-control {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .metallic-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+/* Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Engine Room Specific Styles */
+.engine-room-bg {
+  background: 
+    linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%),
+    url('/images/engine-room-panel.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Bridge Specific Styles */
+.bridge-bg {
+  background: 
+    linear-gradient(135deg, rgba(7, 89, 133, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%),
+    url('/images/bridge-navigation.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Custom scrollbar for maritime theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Range input styling for maritime controls */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #475569;
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #3b82f6;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Glowing effects for critical controls */
+.critical-glow {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+  }
+}
+
+/* Navigation radar sweep animation */
+.radar-sweep {
+  animation: radar-rotate 4s linear infinite;
+}
+
+@keyframes radar-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Metallic button effect */
+.metallic-button {
+  background: linear-gradient(145deg, #64748b, #475569);
+  border: 1px solid #334155;
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.metallic-button:hover {
+  background: linear-gradient(145deg, #475569, #334155);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.15),
+    0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.metallic-button:active {
+  background: linear-gradient(145deg, #334155, #475569);
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* LED indicator animations */
+.led-indicator {
+  border-radius: 50%;
+  animation: led-pulse 2s infinite;
+}
+
+@keyframes led-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Engine startup progress animation */
+.startup-progress {
+  background: linear-gradient(90deg, #3b82f6, #22c55e);
+  background-size: 200% 100%;
+  animation: gradient-flow 3s ease infinite;
+}
+
+@keyframes gradient-flow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Maritime glass effect */
+.glass-panel {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+/* Alarm blinking effect */
+.alarm-blink {
+  animation: alarm-flash 1s infinite;
+}
+
+@keyframes alarm-flash {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.3;
+  }
+}
+
+/* Typography for maritime displays */
+.maritime-display {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* Responsive grid adjustments */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .lg\\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .xl\\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Accelerated Realism Framework Enhancements */
+
+/* Enhanced Control Buttons for Sequential Flow */
+.control-button {
+  background: linear-gradient(145deg, #64748b, #475569);
+  border: 2px solid #94a3b8;
+  border-radius: 8px;
+  color: #1e293b;
+  font-weight: bold;
+  padding: 12px 20px;
+  margin: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    3px 3px 6px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  font-size: 14px;
+  min-width: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-button.enabled {
+  background: linear-gradient(145deg, #3b82f6, #2563eb);
+  border-color: #1d4ed8;
+  color: white;
+  cursor: pointer;
+}
+
+.control-button.enabled:hover {
+  background: linear-gradient(145deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 
+    4px 4px 8px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.control-button.disabled {
+  background: linear-gradient(145deg, #475569, #334155);
+  border-color: #64748b;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Tutorial System Highlighting */
+.tutorial-highlight {
+  animation: tutorial-pulse 2s ease-in-out infinite;
+  z-index: 1000;
+  position: relative;
+}
+
+@keyframes tutorial-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 3px #3b82f6, 0 0 20px #3b82f6;
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 0 6px #3b82f680, 0 0 30px #3b82f6;
+    transform: scale(1.02);
+  }
+}
+
+/* Enhanced Progress Indicators */
+.startup-progress {
+  background: linear-gradient(90deg, 
+    #ef4444 0%,    /* Red - Critical */
+    #f97316 15%,   /* Orange - Warning */
+    #eab308 30%,   /* Yellow - Caution */
+    #84cc16 60%,   /* Lime - Good */
+    #22c55e 80%,   /* Green - Excellent */
+    #06b6d4 100%   /* Cyan - Perfect */
+  );
+  box-shadow: 
+    0 0 8px rgba(34, 197, 94, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: width 0.5s ease-in-out;
+  border-radius: 4px;
+  position: relative;
+}
+
+.startup-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  animation: progress-shine 2s ease-in-out infinite;
+}
+
+@keyframes progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* System Status Dashboard */
+.system-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.system-status-item {
+  background: linear-gradient(145deg, #334155, #1e293b);
+  border: 2px solid #64748b;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.system-status-item.system-running {
+  border-color: #22c55e;
+  background: linear-gradient(145deg, #166534, #15803d);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.system-status-item.system-starting {
+  border-color: #f59e0b;
+  background: linear-gradient(145deg, #92400e, #b45309);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+  animation: system-starting 1.5s ease-in-out infinite;
+}
+
+@keyframes system-starting {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Phase Section Styling */
+.phase-section {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 2px solid #475569;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.phase-section.phase-active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.phase-section.phase-completed {
+  border-color: #22c55e;
+  background: linear-gradient(145deg, #166534, #15803d);
+}
+
+/* Performance Metrics */
+.performance-metric {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 2px solid #475569;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.performance-metric.score-excellent {
+  border-color: #22c55e;
+  background: linear-gradient(145deg, #166534, #15803d);
+}
+
+.performance-metric.score-good {
+  border-color: #eab308;
+  background: linear-gradient(145deg, #92400e, #b45309);
+}
+
+.performance-metric.score-poor {
+  border-color: #ef4444;
+  background: linear-gradient(145deg, #991b1b, #dc2626);
+}
+
+/* Time Scale Indicators */
+.time-scale-button {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 2px solid #475569;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-scale-button.active {
+  border-color: #3b82f6;
+  background: linear-gradient(145deg, #1e40af, #1d4ed8);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Difficulty Badges */
+.difficulty-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.difficulty-beginner {
+  background: linear-gradient(145deg, #22c55e, #16a34a);
+  color: white;
+  border: 2px solid #15803d;
+}
+
+.difficulty-intermediate {
+  background: linear-gradient(145deg, #eab308, #d97706);
+  color: white;
+  border: 2px solid #b45309;
+}
+
+.difficulty-expert {
+  background: linear-gradient(145deg, #f97316, #ea580c);
+  color: white;
+  border: 2px solid #c2410c;
+}
+
+.difficulty-realistic {
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+  color: white;
+  border: 2px solid #b91c1c;
+}
+
+/* Audio Feedback Indicators */
+.audio-toggle {
+  background: linear-gradient(145deg, #475569, #334155);
+  border: 2px solid #64748b;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.audio-toggle.enabled {
+  border-color: #22c55e;
+  background: linear-gradient(145deg, #166534, #15803d);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+.audio-toggle.disabled {
+  border-color: #ef4444;
+  background: linear-gradient(145deg, #991b1b, #dc2626);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+/* Enhanced Background for Engine Room */
+.engine-room-bg {
+  background: 
+    linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.03) 1px, transparent 0),
+    url('/images/engine-room-panel.jpg');
+  background-size: cover, 20px 20px, cover;
+  background-attachment: fixed, local, fixed;
+}
+
+/* Accelerated Realism Framework Enhancements */
+
+/* Enhanced Control Buttons for Sequential Flow */
+.control-button {
+  background: linear-gradient(145deg, #64748b, #475569);
+  border: 2px solid #94a3b8;
+  border-radius: 8px;
+  color: #1e293b;
+  font-weight: bold;
+  padding: 12px 20px;
+  margin: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 
+    3px 3px 6px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  font-size: 14px;
+  min-width: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-button.enabled {
+  background: linear-gradient(145deg, #3b82f6, #2563eb);
+  border-color: #1d4ed8;
+  color: white;
+  cursor: pointer;
+}
+
+.control-button.enabled:hover {
+  background: linear-gradient(145deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 
+    4px 4px 8px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.control-button.disabled {
+  background: linear-gradient(145deg, #475569, #334155);
+  border-color: #64748b;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Tutorial System Highlighting */
+.tutorial-highlight {
+  box-shadow: 0 0 0 3px #3b82f6, 0 0 20px #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  animation: tutorial-pulse 2s ease-in-out infinite;
+  z-index: 1000;
+  position: relative;
+}
+
+@keyframes tutorial-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 3px #3b82f6, 0 0 20px #3b82f6;
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 0 6px #3b82f680, 0 0 30px #3b82f6;
+    transform: scale(1.02);
+  }
+}
+
+/* Enhanced Progress Indicators */
+.startup-progress {
+  background: linear-gradient(90deg, 
+    #ef4444 0%,    /* Red - Critical */
+    #f97316 15%,   /* Orange - Warning */
+    #eab308 30%,   /* Yellow - Caution */
+    #84cc16 60%,   /* Lime - Good */
+    #22c55e 80%,   /* Green - Excellent */
+    #06b6d4 100%   /* Cyan - Perfect */
+  );
+  box-shadow: 
+    0 0 8px rgba(34, 197, 94, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: width 0.5s ease-in-out;
+  border-radius: 4px;
+  position: relative;
+}
+
+.startup-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  animation: progress-shine 2s ease-in-out infinite;
+}
+
+@keyframes progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* System Status Dashboard */
+.system-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.system-status-item {
+  background: linear-gradient(145deg, #334155, #1e293b);
+  border: 2px solid #64748b;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.system-status-item.system-running {
+  border-color: #22c55e;
+  background: linear-gradient(145deg, #166534, #15803d);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.system-status-item.system-starting {
+  border-color: #f59e0b;
+  background: linear-gradient(145deg, #92400e, #b45309);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+  animation: system-starting 1.5s ease-in-out infinite;
+}
+
+@keyframes system-starting {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Phase Section Styling */
+.phase-section {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 2px solid #475569;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.phase-section.phase-active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.phase-section.phase-completed {
+  border-color: #22c55e;
+  background: linear-gradient(145deg, #166534, #15803d);
+}
+
+/* Performance Metrics */
+.performance-metric {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 2px solid #475569;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+
+.performance-metric.score-excellent {
+  border-color: #22c55e;
+  background: linear-gradient(145deg, #166534, #15803d);
+}
+
+.performance-metric.score-good {
+  border-color: #eab308;
+  background: linear-gradient(145deg, #92400e, #b45309);
+}
+
+.performance-metric.score-poor {
+  border-color: #ef4444;
+  background: linear-gradient(145deg, #991b1b, #dc2626);
+}

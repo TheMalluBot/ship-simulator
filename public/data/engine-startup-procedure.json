@@ -1,0 +1,195 @@
+{
+  "engineStartupProcedure": [
+    {
+      "step": 1,
+      "title": "Receive Notice from Bridge",
+      "description": "Acknowledge the one-hour notice from the bridge to prepare the engine for departure",
+      "duration": 5,
+      "critical": false,
+      "checks": ["Bridge communication received", "Departure time confirmed"],
+      "status": "pending"
+    },
+    {
+      "step": 2,
+      "title": "Start Additional Generator",
+      "description": "Ensure sufficient electrical power for all systems",
+      "duration": 30,
+      "critical": true,
+      "checks": ["Generator status", "Electrical load distribution", "Voltage levels"],
+      "status": "pending"
+    },
+    {
+      "step": 3,
+      "title": "Engage Turning Gear and Lubricate",
+      "description": "Engage the turning gear to slowly rotate the engine, ensuring all moving parts are lubricated",
+      "duration": 60,
+      "critical": true,
+      "checks": ["Turning gear engaged", "Oil pressure", "Lubrication system"],
+      "status": "pending"
+    },
+    {
+      "step": 4,
+      "title": "Check and Verify Compressed Air System",
+      "description": "Ensure the starting air receivers are fully charged",
+      "duration": 15,
+      "critical": true,
+      "checks": ["Air receiver pressure", "Compressor status", "Air quality"],
+      "status": "pending"
+    },
+    {
+      "step": 5,
+      "title": "Disengage Turning Gear",
+      "description": "CRITICAL STEP. Ensure the turning gear is fully disengaged and the indicator shows it is clear",
+      "duration": 10,
+      "critical": true,
+      "checks": ["Turning gear disengaged", "Safety interlock", "Visual indicator"],
+      "status": "pending"
+    },
+    {
+      "step": 6,
+      "title": "Open Indicator Cocks",
+      "description": "Open the indicator cocks on each cylinder to blow out any accumulated water or oil",
+      "duration": 5,
+      "critical": false,
+      "checks": ["All indicator cocks open", "Cylinder drainage"],
+      "status": "pending"
+    },
+    {
+      "step": 7,
+      "title": "Perform Air Blow",
+      "description": "Give a short blast of starting air to blow out any water from the cylinders",
+      "duration": 3,
+      "critical": false,
+      "checks": ["Air blow completed", "Cylinders clear"],
+      "status": "pending"
+    },
+    {
+      "step": 8,
+      "title": "Close Indicator Cocks",
+      "description": "Close the indicator cocks",
+      "duration": 5,
+      "critical": false,
+      "checks": ["All indicator cocks closed", "System sealed"],
+      "status": "pending"
+    },
+    {
+      "step": 9,
+      "title": "Open Main Starting Air Valve",
+      "description": "Open the main starting air valve to pressurize the system",
+      "duration": 5,
+      "critical": true,
+      "checks": ["Main air valve open", "System pressure", "Air distribution"],
+      "status": "pending"
+    },
+    {
+      "step": 10,
+      "title": "Select Control Position",
+      "description": "Select the engine control position (Bridge, Engine Control Room, or Local)",
+      "duration": 5,
+      "critical": true,
+      "checks": ["Control position selected", "Authority transfer", "Communication link"],
+      "status": "pending"
+    },
+    {
+      "step": 11,
+      "title": "Test Engine Ahead and Astern",
+      "description": "Give a short kick to the engine in both ahead and astern directions to test its operation",
+      "duration": 30,
+      "critical": true,
+      "checks": ["Engine response ahead", "Engine response astern", "Telegraph operation"],
+      "status": "pending"
+    },
+    {
+      "step": 12,
+      "title": "Inform Bridge of Readiness",
+      "description": "Inform the bridge that the engine is ready for maneuvering",
+      "duration": 5,
+      "critical": true,
+      "checks": ["Bridge notification sent", "Readiness confirmed"],
+      "status": "pending"
+    },
+    {
+      "step": 13,
+      "title": "Hand Over Control to Bridge",
+      "description": "Transfer control of the engine to the bridge",
+      "duration": 10,
+      "critical": true,
+      "checks": ["Control transferred", "Bridge acknowledgment", "Telegraph active"],
+      "status": "pending"
+    },
+    {
+      "step": 14,
+      "title": "Monitor Engine During Maneuvering",
+      "description": "Continuously monitor all engine parameters during maneuvering",
+      "duration": 300,
+      "critical": true,
+      "checks": ["Temperature monitoring", "Pressure monitoring", "Vibration levels"],
+      "status": "pending"
+    },
+    {
+      "step": 15,
+      "title": "Pass Through Critical RPM Range",
+      "description": "Be aware of the engine's critical RPM range and pass through it quickly to avoid excessive vibration",
+      "duration": 20,
+      "critical": true,
+      "checks": ["RPM monitoring", "Vibration levels", "Critical range passed"],
+      "status": "pending"
+    },
+    {
+      "step": 16,
+      "title": "Increase to Full Ahead",
+      "description": "Once clear of the port and on the open sea, gradually increase the engine speed to full ahead",
+      "duration": 60,
+      "critical": false,
+      "checks": ["Speed increase gradual", "Engine parameters stable", "Full ahead achieved"],
+      "status": "pending"
+    },
+    {
+      "step": 17,
+      "title": "Receive Sea Passage Notification",
+      "description": "Acknowledge the notification from the Master for commencement of sea passage",
+      "duration": 5,
+      "critical": false,
+      "checks": ["Notification received", "Sea passage commenced"],
+      "status": "pending"
+    }
+  ],
+  "engineSystems": {
+    "mainEngine": {
+      "name": "Main Propulsion Engine",
+      "type": "Marine Diesel",
+      "power": "12000 kW",
+      "rpm": {
+        "min": 50,
+        "max": 125,
+        "critical": [75, 85]
+      },
+      "parameters": {
+        "oilPressure": { "min": 3.5, "max": 5.0, "unit": "bar", "current": 0 },
+        "oilTemperature": { "min": 60, "max": 85, "unit": "°C", "current": 20 },
+        "coolantTemperature": { "min": 75, "max": 95, "unit": "°C", "current": 20 },
+        "fuelPressure": { "min": 8, "max": 12, "unit": "bar", "current": 0 },
+        "airPressure": { "min": 25, "max": 30, "unit": "bar", "current": 0 }
+      }
+    },
+    "auxiliaryEngine": {
+      "name": "Auxiliary Generator",
+      "power": "1500 kW",
+      "parameters": {
+        "voltage": { "target": 440, "unit": "V", "current": 0 },
+        "frequency": { "target": 60, "unit": "Hz", "current": 0 },
+        "load": { "max": 100, "unit": "%", "current": 0 }
+      }
+    },
+    "fuelSystem": {
+      "mainTank": { "capacity": 2000, "current": 1800, "unit": "m³" },
+      "dayTank": { "capacity": 100, "current": 95, "unit": "m³" },
+      "fuelQuality": { "sulfur": 0.5, "density": 0.95, "temperature": 40 }
+    },
+    "coolingSystem": {
+      "seaWaterPump": { "status": "stopped", "pressure": 0, "flow": 0 },
+      "freshWaterPump": { "status": "stopped", "pressure": 0, "flow": 0 },
+      "centralCooler": { "temperature": 20, "efficiency": 0 }
+    }
+  }
+}

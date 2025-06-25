@@ -1,0 +1,621 @@
+{
+  "coldShipStartupProcedure": {
+    "totalDuration": 3240,
+    "phases": [
+      {
+        "id": "PHASE_1_EMERGENCY",
+        "name": "Emergency Systems Activation",
+        "duration": 480,
+        "description": "Essential emergency power and safety systems startup",
+        "steps": [
+          {
+            "id": "EMERGENCY_GEN_START",
+            "name": "Emergency Generator Manual Start",
+            "duration": 180,
+            "prerequisites": [],
+            "description": "Manual crank start of emergency diesel generator",
+            "procedure": "1. Check fuel level\n2. Open fuel valve\n3. Engage manual crank\n4. Crank engine (minimum 20 turns)\n5. Verify ignition\n6. Monitor oil pressure buildup",
+            "criticalParameters": {
+              "fuelLevel": { "min": 80, "unit": "%" },
+              "oilPressure": { "min": 2.5, "max": 4.0, "unit": "bar" },
+              "rpm": { "min": 1500, "max": 1800, "unit": "rpm" }
+            },
+            "interactive": true,
+            "failureModes": ["fuel_low", "oil_pressure_low", "crank_failure"],
+            "audioEvents": ["manual_crank", "engine_ignition", "steady_idle"]
+          },
+          {
+            "id": "EMERGENCY_SWITCHBOARD",
+            "name": "Emergency Switchboard Preparation",
+            "duration": 120,
+            "prerequisites": ["EMERGENCY_GEN_START"],
+            "description": "Connect emergency generator to emergency switchboard",
+            "procedure": "1. Verify generator output voltage\n2. Check frequency stability\n3. Close generator breaker\n4. Verify emergency lighting\n5. Check emergency alarm systems",
+            "criticalParameters": {
+              "voltage": { "target": 440, "tolerance": 20, "unit": "V" },
+              "frequency": { "target": 60, "tolerance": 1, "unit": "Hz" }
+            },
+            "interactive": true,
+            "controls": ["gen_breaker", "voltage_regulator", "freq_adjustment"]
+          },
+          {
+            "id": "EMERGENCY_LIGHTING",
+            "name": "Emergency Lighting & Ventilation",
+            "duration": 60,
+            "prerequisites": ["EMERGENCY_SWITCHBOARD"],
+            "description": "Activate basic lighting and ventilation systems",
+            "procedure": "1. Switch on engine room emergency lighting\n2. Start emergency ventilation fan\n3. Check bilge alarm systems\n4. Verify fire detection active",
+            "interactive": true,
+            "controls": ["lighting_switches", "vent_fan_switch", "alarm_test"]
+          },
+          {
+            "id": "EMERGENCY_AIR_COMP",
+            "name": "Emergency Air Compressor Start",
+            "duration": 120,
+            "prerequisites": ["EMERGENCY_SWITCHBOARD"],
+            "description": "Start emergency air compressor for pneumatic systems",
+            "procedure": "1. Check compressor oil level\n2. Open air intake valve\n3. Start compressor motor\n4. Monitor pressure buildup\n5. Set pressure relief valve",
+            "criticalParameters": {
+              "airPressure": { "target": 30, "min": 25, "unit": "bar" },
+              "oilLevel": { "min": 75, "unit": "%" }
+            },
+            "interactive": true,
+            "realTimeBuildup": true,
+            "buildupRate": 2.5
+          }
+        ]
+      },
+      {
+        "id": "PHASE_2_POWER_GEN",
+        "name": "Main Power Generation",
+        "duration": 900,
+        "description": "Primary diesel generators startup and synchronization",
+        "steps": [
+          {
+            "id": "DG1_COOLING_PREP",
+            "name": "DG#1 Cooling Water Circulation",
+            "duration": 120,
+            "prerequisites": ["EMERGENCY_SWITCHBOARD"],
+            "description": "Start cooling water circulation for DG#1",
+            "procedure": "1. Open sea suction valve\n2. Prime cooling water pump\n3. Start circulation pump\n4. Check water flow indicators\n5. Verify temperature sensors",
+            "criticalParameters": {
+              "flowRate": { "min": 150, "unit": "m³/h" },
+              "inletTemp": { "max": 32, "unit": "°C" }
+            },
+            "interactive": true,
+            "controls": ["sea_valve", "pump_prime", "pump_start"],
+            "realTimeFlow": true
+          },
+          {
+            "id": "DG1_OIL_HEATING",
+            "name": "DG#1 Lubrication Oil Heating",
+            "duration": 600,
+            "prerequisites": ["DG1_COOLING_PREP"],
+            "description": "Heat lubrication oil to operating temperature",
+            "procedure": "1. Start oil circulation pump\n2. Activate oil heater\n3. Monitor oil temperature rise\n4. Check oil pressure\n5. Wait for target temperature (45°C)",
+            "criticalParameters": {
+              "oilTemp": { "target": 45, "min": 43, "max": 48, "unit": "°C" },
+              "oilPressure": { "min": 3.5, "max": 5.0, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["oil_pump", "oil_heater"],
+            "realTimeHeating": true,
+            "heatingRate": 1.2,
+            "startTemp": 22
+          },
+          {
+            "id": "DG1_FUEL_PRIME",
+            "name": "DG#1 Fuel System Priming",
+            "duration": 180,
+            "prerequisites": ["DG1_OIL_HEATING"],
+            "description": "Prime and pressurize fuel system",
+            "procedure": "1. Open fuel tank valve\n2. Start fuel transfer pump\n3. Prime fuel lines\n4. Check fuel filters\n5. Verify fuel pressure",
+            "criticalParameters": {
+              "fuelPressure": { "min": 8, "max": 12, "unit": "bar" },
+              "fuelTemp": { "min": 40, "max": 50, "unit": "°C" }
+            },
+            "interactive": true,
+            "controls": ["fuel_valve", "transfer_pump", "prime_button"],
+            "realTimePressure": true
+          },
+          {
+            "id": "DG1_AIR_SYSTEM",
+            "name": "DG#1 Starting Air System Check",
+            "duration": 60,
+            "prerequisites": ["EMERGENCY_AIR_COMP"],
+            "description": "Verify starting air system readiness",
+            "procedure": "1. Check air receiver pressure\n2. Test air starting valve\n3. Verify air line integrity\n4. Check safety relief valves",
+            "criticalParameters": {
+              "airPressure": { "min": 30, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["air_valve_test"]
+          },
+          {
+            "id": "DG1_START_WARMUP",
+            "name": "DG#1 Start and Warm-up",
+            "duration": 300,
+            "prerequisites": ["DG1_FUEL_PRIME", "DG1_AIR_SYSTEM"],
+            "description": "Start diesel generator and warm-up period",
+            "procedure": "1. Engage starting air\n2. Monitor ignition\n3. Check oil pressure immediately\n4. Monitor temperature rise\n5. Gradual load acceptance",
+            "criticalParameters": {
+              "rpm": { "target": 1800, "tolerance": 50, "unit": "rpm" },
+              "oilPressure": { "min": 3.5, "unit": "bar" },
+              "coolantTemp": { "max": 85, "unit": "°C" }
+            },
+            "interactive": true,
+            "controls": ["start_button", "throttle"],
+            "audioEvents": ["engine_start", "warm_idle", "load_accept"],
+            "realTimeWarmup": true
+          }
+        ]
+      },
+      {
+        "id": "PHASE_3_STEAM_GEN",
+        "name": "Steam Generation System",
+        "duration": 1200,
+        "description": "Boiler startup and steam system preparation",
+        "steps": [
+          {
+            "id": "BOILER_WATER_CHECK",
+            "name": "Boiler Water Level Check",
+            "duration": 120,
+            "prerequisites": ["DG1_START_WARMUP"],
+            "description": "Verify and adjust boiler water level",
+            "procedure": "1. Check water level gauges\n2. Test gauge glass\n3. Verify water quality\n4. Top-up if necessary\n5. Check feed water pump",
+            "criticalParameters": {
+              "waterLevel": { "min": 60, "max": 85, "unit": "%" },
+              "waterQuality": { "conductivity": { "max": 3.5, "unit": "μS/cm" } }
+            },
+            "interactive": true,
+            "controls": ["level_gauge", "feed_pump", "water_test"]
+          },
+          {
+            "id": "COMBUSTION_AIR_PREP",
+            "name": "Combustion Air System Preparation",
+            "duration": 180,
+            "prerequisites": ["BOILER_WATER_CHECK"],
+            "description": "Prepare combustion air supply system",
+            "procedure": "1. Start forced draft fan\n2. Open air dampers\n3. Check air filter condition\n4. Verify air pressure\n5. Test modulating dampers",
+            "criticalParameters": {
+              "airPressure": { "min": 20, "unit": "mbar" },
+              "fanRpm": { "target": 1450, "unit": "rpm" }
+            },
+            "interactive": true,
+            "controls": ["fd_fan", "air_dampers", "pressure_test"]
+          },
+          {
+            "id": "FUEL_OIL_HEATING",
+            "name": "Boiler Fuel Oil Heating System",
+            "duration": 480,
+            "prerequisites": ["COMBUSTION_AIR_PREP"],
+            "description": "Heat heavy fuel oil to injection temperature",
+            "procedure": "1. Start fuel oil circulation\n2. Activate fuel heaters\n3. Monitor viscosity\n4. Check heating coils\n5. Reach injection temperature (98°C)",
+            "criticalParameters": {
+              "fuelTemp": { "target": 98, "min": 95, "max": 105, "unit": "°C" },
+              "viscosity": { "target": 15, "max": 20, "unit": "cSt" },
+              "pressure": { "min": 10, "max": 15, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["fuel_heater", "circulation_pump", "viscosity_meter"],
+            "realTimeHeating": true,
+            "heatingRate": 2.1,
+            "startTemp": 22
+          },
+          {
+            "id": "PURGING_SEQUENCE",
+            "name": "Boiler Purging Sequence",
+            "duration": 300,
+            "prerequisites": ["FUEL_OIL_HEATING"],
+            "description": "Mandatory 5-minute safety purging",
+            "procedure": "1. Open all air dampers fully\n2. Run forced draft fan at maximum\n3. Maintain minimum 5-minute purge\n4. Check for gas accumulation\n5. Verify combustion chamber clear",
+            "criticalParameters": {
+              "purgeDuration": { "min": 300, "unit": "seconds" },
+              "airFlow": { "min": 150, "unit": "%" }
+            },
+            "interactive": false,
+            "mandatory": true,
+            "controls": ["purge_timer"],
+            "audioEvents": ["purge_alarm", "fan_high_speed"]
+          },
+          {
+            "id": "IGNITION_FLAME",
+            "name": "Ignition and Flame Establishment",
+            "duration": 120,
+            "prerequisites": ["PURGING_SEQUENCE"],
+            "description": "Light pilot burner and establish main flame",
+            "procedure": "1. Light pilot burner\n2. Verify pilot flame detection\n3. Open main fuel valve gradually\n4. Establish main flame\n5. Check flame stability",
+            "criticalParameters": {
+              "pilotFlame": { "status": "detected" },
+              "mainFlame": { "stability": "stable" },
+              "fuelPressure": { "min": 12, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["pilot_ignition", "main_fuel_valve"],
+            "audioEvents": ["ignition_spark", "flame_whoosh"],
+            "safetyInterlocks": true
+          }
+        ]
+      },
+      {
+        "id": "PHASE_4_SUPPORT_SYSTEMS",
+        "name": "Support Systems Activation",
+        "duration": 900,
+        "description": "Cooling, compressed air, and auxiliary systems startup",
+        "steps": [
+          {
+            "id": "SEAWATER_COOLING",
+            "name": "Sea Water Cooling System",
+            "duration": 240,
+            "prerequisites": ["DG1_START_WARMUP"],
+            "description": "Main sea water cooling system startup",
+            "procedure": "1. Open sea chest valves\n2. Prime main cooling pumps\n3. Start primary cooling pump\n4. Check cooling water flow\n5. Start secondary pump for redundancy",
+            "criticalParameters": {
+              "flowRate": { "min": 400, "unit": "m³/h" },
+              "inletTemp": { "max": 32, "unit": "°C" },
+              "pressure": { "min": 2.5, "max": 4.0, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["sea_valves", "pump_prime", "pump_controls"],
+            "realTimeFlow": true
+          },
+          {
+            "id": "FRESHWATER_SYSTEM",
+            "name": "Fresh Water System Preparation",
+            "duration": 180,
+            "prerequisites": ["SEAWATER_COOLING"],
+            "description": "Fresh water cooling circuit preparation",
+            "procedure": "1. Check fresh water tank level\n2. Start circulation pumps\n3. Check expansion tank\n4. Verify temperature control\n5. Test thermostatic valves",
+            "criticalParameters": {
+              "tankLevel": { "min": 80, "unit": "%" },
+              "pressure": { "min": 1.5, "max": 3.0, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["tank_level", "circulation_pumps", "temp_control"]
+          },
+          {
+            "id": "COMPRESSED_AIR_MAIN",
+            "name": "Main Compressed Air System",
+            "duration": 360,
+            "prerequisites": ["DG1_START_WARMUP"],
+            "description": "Main air compressors startup sequence",
+            "procedure": "1. Start main air compressor #1\n2. Monitor pressure buildup\n3. Start compressor #2\n4. Load air receivers\n5. Check pneumatic systems",
+            "criticalParameters": {
+              "systemPressure": { "target": 30, "min": 25, "unit": "bar" },
+              "receiverLevel": { "min": 85, "unit": "%" }
+            },
+            "interactive": true,
+            "controls": ["comp1_start", "comp2_start", "pressure_reg"],
+            "realTimePressure": true,
+            "buildupRate": 1.8
+          },
+          {
+            "id": "FUEL_PURIFICATION",
+            "name": "Fuel Oil Purification System",
+            "duration": 300,
+            "prerequisites": ["FRESHWATER_SYSTEM"],
+            "description": "Start fuel oil purification and treatment",
+            "procedure": "1. Start fuel oil heaters\n2. Start purifier bowl\n3. Start feed pump\n4. Adjust separation rate\n5. Monitor water content",
+            "criticalParameters": {
+              "separatorRpm": { "target": 6840, "unit": "rpm" },
+              "fuelTemp": { "target": 85, "unit": "°C" },
+              "waterContent": { "max": 0.5, "unit": "%" }
+            },
+            "interactive": true,
+            "controls": ["purifier_start", "heater_control", "feed_rate"],
+            "realTimeProcessing": true
+          }
+        ]
+      },
+      {
+        "id": "PHASE_5_MAIN_ENGINE_PREP",
+        "name": "Main Engine Preparation",
+        "duration": 1200,
+        "description": "Main propulsion engine preparation for startup",
+        "steps": [
+          {
+            "id": "TURNING_GEAR_ENGAGE",
+            "name": "Turning Gear Engagement",
+            "duration": 300,
+            "prerequisites": ["COMPRESSED_AIR_MAIN"],
+            "description": "Engage turning gear for slow engine rotation",
+            "procedure": "1. Check engine static position\n2. Engage turning gear motor\n3. Start slow rotation (3 rpm)\n4. Listen for unusual sounds\n5. Complete 5 full rotations minimum",
+            "criticalParameters": {
+              "rotationSpeed": { "target": 3, "unit": "rpm" },
+              "torque": { "max": 50, "unit": "kNm" },
+              "rotationCount": { "min": 5, "unit": "rotations" }
+            },
+            "interactive": true,
+            "controls": ["turning_gear_engage", "rotation_counter"],
+            "audioEvents": ["turning_gear_engage", "slow_rotation"],
+            "safetyInterlocks": true
+          },
+          {
+            "id": "MAIN_ENGINE_LUBE",
+            "name": "Main Engine Lubrication System",
+            "duration": 480,
+            "prerequisites": ["TURNING_GEAR_ENGAGE"],
+            "description": "Start main engine lubrication and heating",
+            "procedure": "1. Start main lube oil pump\n2. Activate oil heaters\n3. Check oil filters\n4. Monitor oil temperature rise\n5. Verify bearing oil supply",
+            "criticalParameters": {
+              "oilTemp": { "target": 45, "min": 42, "max": 50, "unit": "°C" },
+              "oilPressure": { "min": 4.0, "max": 6.0, "unit": "bar" },
+              "filterDP": { "max": 0.5, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["lube_pump", "oil_heaters", "filter_check"],
+            "realTimeHeating": true,
+            "heatingRate": 0.8,
+            "startTemp": 22
+          },
+          {
+            "id": "CYLINDER_COOLING",
+            "name": "Cylinder Cooling Water System",
+            "duration": 240,
+            "prerequisites": ["FRESHWATER_SYSTEM"],
+            "description": "Start main engine cylinder cooling",
+            "procedure": "1. Start cylinder cooling pumps\n2. Open cooling water valves\n3. Check jacket water flow\n4. Monitor temperature sensors\n5. Test temperature alarms",
+            "criticalParameters": {
+              "flowRate": { "min": 200, "unit": "m³/h" },
+              "inletTemp": { "max": 36, "unit": "°C" },
+              "outletTemp": { "max": 85, "unit": "°C" }
+            },
+            "interactive": true,
+            "controls": ["cooling_pumps", "water_valves", "temp_monitor"]
+          },
+          {
+            "id": "FUEL_INJECTION_HEAT",
+            "name": "Main Engine Fuel Heating",
+            "duration": 600,
+            "prerequisites": ["FUEL_PURIFICATION"],
+            "description": "Heat main engine fuel to injection temperature",
+            "procedure": "1. Start fuel circulation\n2. Activate fuel heaters\n3. Check fuel viscosity\n4. Monitor heating gradual rise\n5. Reach injection temperature (98°C)",
+            "criticalParameters": {
+              "fuelTemp": { "target": 98, "min": 95, "max": 105, "unit": "°C" },
+              "viscosity": { "target": 12, "max": 15, "unit": "cSt" },
+              "pressure": { "min": 8, "max": 12, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["fuel_heaters", "circulation_control", "viscosity_control"],
+            "realTimeHeating": true,
+            "heatingRate": 1.8,
+            "startTemp": 22
+          },
+          {
+            "id": "SCAVENGE_AIR",
+            "name": "Scavenge Air System",
+            "duration": 180,
+            "prerequisites": ["COMPRESSED_AIR_MAIN"],
+            "description": "Start scavenge air blowers and pressure system",
+            "procedure": "1. Start turbocharger\n2. Start auxiliary blower\n3. Check air cooler\n4. Monitor air pressure\n5. Test air distribution",
+            "criticalParameters": {
+              "scavengePress": { "min": 2.2, "max": 2.8, "unit": "bar" },
+              "airTemp": { "max": 45, "unit": "°C" },
+              "blowerRpm": { "target": 4500, "unit": "rpm" }
+            },
+            "interactive": true,
+            "controls": ["turbo_start", "aux_blower", "air_cooler"]
+          },
+          {
+            "id": "STARTING_AIR_FINAL",
+            "name": "Starting Air System Final Check",
+            "duration": 120,
+            "prerequisites": ["COMPRESSED_AIR_MAIN"],
+            "description": "Final starting air system verification",
+            "procedure": "1. Check air receiver pressure\n2. Test starting valve operation\n3. Verify air distributor\n4. Check safety interlocks\n5. Confirm 30 bar minimum",
+            "criticalParameters": {
+              "airPressure": { "min": 30, "unit": "bar" },
+              "valveTest": { "status": "passed" }
+            },
+            "interactive": true,
+            "controls": ["pressure_check", "valve_test", "interlock_check"]
+          },
+          {
+            "id": "BRIDGE_CONTROL_TRANSFER",
+            "name": "Bridge Control Transfer Preparation",
+            "duration": 120,
+            "prerequisites": ["STARTING_AIR_FINAL"],
+            "description": "Prepare for bridge control transfer",
+            "procedure": "1. Test telegraph system\n2. Verify engine room communication\n3. Check control system\n4. Test emergency stops\n5. Confirm ready status",
+            "criticalParameters": {
+              "telegraphTest": { "status": "passed" },
+              "commTest": { "status": "passed" }
+            },
+            "interactive": true,
+            "controls": ["telegraph_test", "comm_check", "control_verify"]
+          }
+        ]
+      },
+      {
+        "id": "PHASE_6_MAIN_ENGINE_START",
+        "name": "Main Engine Start Sequence",
+        "duration": 600,
+        "description": "Final main engine startup and handover to bridge",
+        "steps": [
+          {
+            "id": "FINAL_SAFETY_CHECK",
+            "name": "Final Safety Systems Check",
+            "duration": 120,
+            "prerequisites": ["BRIDGE_CONTROL_TRANSFER"],
+            "description": "Complete pre-start safety verification",
+            "procedure": "1. Verify all systems ready\n2. Check emergency stops\n3. Confirm personnel clear\n4. Test alarm systems\n5. Final GO/NO-GO decision",
+            "criticalParameters": {
+              "allSystemsGreen": { "status": "confirmed" },
+              "emergencyStops": { "status": "tested" },
+              "alarmSystems": { "status": "functional" }
+            },
+            "interactive": true,
+            "controls": ["systems_check", "emergency_test", "go_nogo"],
+            "safetyInterlocks": true
+          },
+          {
+            "id": "TURNING_GEAR_DISENGAGE",
+            "name": "Turning Gear Disengagement",
+            "duration": 60,
+            "prerequisites": ["FINAL_SAFETY_CHECK"],
+            "description": "Disengage turning gear before engine start",
+            "procedure": "1. Stop turning gear motor\n2. Disengage mechanical coupling\n3. Verify complete disengagement\n4. Check safety indicators\n5. Confirm ready for start",
+            "criticalParameters": {
+              "disengagement": { "status": "confirmed" },
+              "safetyIndicator": { "status": "clear" }
+            },
+            "interactive": true,
+            "controls": ["turning_gear_disengage", "safety_confirm"],
+            "audioEvents": ["turning_gear_disengage"],
+            "safetyInterlocks": true
+          },
+          {
+            "id": "FIRST_FUEL_INJECTION",
+            "name": "First Fuel Injection",
+            "duration": 180,
+            "prerequisites": ["TURNING_GEAR_DISENGAGE"],
+            "description": "Initial fuel injection and ignition",
+            "procedure": "1. Open starting air valve\n2. Inject fuel to cylinder 1\n3. Monitor ignition\n4. Check combustion pressure\n5. Proceed cylinder by cylinder",
+            "criticalParameters": {
+              "combustionPress": { "min": 80, "unit": "bar" },
+              "exhaustTemp": { "min": 200, "max": 450, "unit": "°C" },
+              "fuelPressure": { "min": 8, "unit": "bar" }
+            },
+            "interactive": true,
+            "controls": ["air_start_valve", "fuel_injection", "ignition_check"],
+            "audioEvents": ["air_start", "first_ignition", "engine_fire"],
+            "realTimeCombustion": true
+          },
+          {
+            "id": "ENGINE_FIRING",
+            "name": "Engine Firing and RPM Buildup",
+            "duration": 180,
+            "prerequisites": ["FIRST_FUEL_INJECTION"],
+            "description": "Complete engine firing sequence",
+            "procedure": "1. Continue cylinder firing sequence\n2. Monitor RPM increase\n3. Check all cylinder temperatures\n4. Verify fuel injection all cylinders\n5. Reach idle RPM (60 rpm)",
+            "criticalParameters": {
+              "rpm": { "target": 60, "min": 55, "max": 65, "unit": "rpm" },
+              "cylinderTemp": { "min": 200, "max": 400, "unit": "°C" },
+              "exhaustTemp": { "min": 250, "max": 420, "unit": "°C" }
+            },
+            "interactive": true,
+            "controls": ["cylinder_firing", "rpm_control", "temp_monitor"],
+            "audioEvents": ["engine_firing", "rpm_buildup", "steady_idle"],
+            "realTimeRPM": true
+          },
+          {
+            "id": "WARMUP_PERIOD",
+            "name": "Engine Warm-up Period",
+            "duration": 240,
+            "prerequisites": ["ENGINE_FIRING"],
+            "description": "Mandatory warm-up period before load",
+            "procedure": "1. Maintain idle RPM (60 rpm)\n2. Monitor all temperatures\n3. Check lubrication pressure\n4. Verify cooling flow\n5. Complete 4-minute warm-up",
+            "criticalParameters": {
+              "warmupTime": { "min": 240, "unit": "seconds" },
+              "lubePressure": { "min": 4.0, "unit": "bar" },
+              "coolingFlow": { "min": 200, "unit": "m³/h" }
+            },
+            "interactive": false,
+            "mandatory": true,
+            "controls": ["warmup_timer"],
+            "audioEvents": ["steady_idle", "systems_stable"]
+          },
+          {
+            "id": "READY_BRIDGE_CONTROL",
+            "name": "Ready for Bridge Control",
+            "duration": 60,
+            "prerequisites": ["WARMUP_PERIOD"],
+            "description": "Final handover to bridge control",
+            "procedure": "1. Notify bridge of readiness\n2. Transfer control to bridge\n3. Test telegraph response\n4. Confirm engine ready\n5. Begin standby monitoring",
+            "criticalParameters": {
+              "controlTransfer": { "status": "completed" },
+              "telegraphResponse": { "status": "confirmed" },
+              "engineStatus": { "status": "ready" }
+            },
+            "interactive": true,
+            "controls": ["bridge_notify", "control_transfer", "telegraph_confirm"],
+            "audioEvents": ["bridge_ready", "control_transfer"]
+          }
+        ]
+      }
+    ]
+  },
+  "systemStates": {
+    "emergencyGenerator": {
+      "status": "stopped",
+      "fuelLevel": 95,
+      "oilPressure": 0,
+      "rpm": 0,
+      "voltage": 0,
+      "frequency": 0
+    },
+    "dieselGenerator1": {
+      "status": "stopped",
+      "coolingWaterFlow": false,
+      "oilTemp": 22,
+      "oilPressure": 0,
+      "fuelPressure": 0,
+      "rpm": 0,
+      "load": 0,
+      "voltage": 0,
+      "frequency": 0
+    },
+    "boilerSystem": {
+      "status": "cold",
+      "waterLevel": 70,
+      "steamPressure": 0,
+      "fuelTemp": 22,
+      "combustionAirPressure": 0,
+      "purgeComplete": false,
+      "flameStatus": "off"
+    },
+    "mainEngine": {
+      "status": "stopped",
+      "turningGearEngaged": false,
+      "oilTemp": 22,
+      "oilPressure": 0,
+      "fuelTemp": 22,
+      "coolingWaterFlow": false,
+      "scavengeAirPressure": 0,
+      "startingAirPressure": 0,
+      "rpm": 0,
+      "cylinderTemps": [22, 22, 22, 22, 22, 22]
+    },
+    "supportSystems": {
+      "seaWaterCooling": {
+        "status": "stopped",
+        "flowRate": 0,
+        "pressure": 0
+      },
+      "compressedAir": {
+        "mainPressure": 0,
+        "emergencyPressure": 0,
+        "comp1Status": "stopped",
+        "comp2Status": "stopped"
+      },
+      "fuelPurification": {
+        "status": "stopped",
+        "separatorRpm": 0,
+        "fuelTemp": 22,
+        "waterContent": 2.5
+      }
+    }
+  },
+  "performanceTracking": {
+    "mistakeTypes": [
+      "sequence_violation",
+      "parameter_out_of_range",
+      "safety_interlock_bypass",
+      "insufficient_warmup_time",
+      "missing_prerequisite",
+      "emergency_procedure_error"
+    ],
+    "timeTargets": {
+      "excellent": 3240,
+      "good": 3600,
+      "acceptable": 4200,
+      "needs_improvement": 5400
+    },
+    "certificationLevels": {
+      "master": { "mistakes": 0, "timeRatio": 1.0, "safetyScore": 100 },
+      "advanced": { "mistakes": 2, "timeRatio": 1.1, "safetyScore": 95 },
+      "competent": { "mistakes": 5, "timeRatio": 1.3, "safetyScore": 85 },
+      "basic": { "mistakes": 10, "timeRatio": 1.5, "safetyScore": 75 }
+    }
+  }
+}

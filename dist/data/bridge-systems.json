@@ -1,0 +1,159 @@
+{
+  "navigationSystems": {
+    "gps": {
+      "name": "Global Positioning System",
+      "status": "active",
+      "accuracy": 5,
+      "satellites": 12,
+      "position": {
+        "latitude": 55.7558,
+        "longitude": 12.4784,
+        "course": 0,
+        "speed": 0
+      }
+    },
+    "radar": {
+      "name": "Navigation Radar",
+      "status": "standby",
+      "range": 12,
+      "mode": "head-up",
+      "gain": 50,
+      "seaClutter": 20,
+      "rainClutter": 10,
+      "targets": []
+    },
+    "ecdis": {
+      "name": "Electronic Chart Display",
+      "status": "active",
+      "chart": "DK50_2024_01",
+      "scale": 25000,
+      "safetyContour": 10,
+      "shallowContour": 5,
+      "deepContour": 30
+    },
+    "compass": {
+      "name": "Gyro Compass",
+      "status": "active",
+      "heading": 0,
+      "deviation": 0.5,
+      "settlingTime": 120
+    },
+    "autopilot": {
+      "name": "Autopilot System",
+      "status": "standby",
+      "mode": "heading",
+      "setHeading": 0,
+      "rudderLimit": 35,
+      "counterRudder": 5
+    }
+  },
+  "communicationSystems": {
+    "vhf": {
+      "name": "VHF Radio",
+      "status": "active",
+      "channel": 16,
+      "power": 25,
+      "squelch": 3,
+      "dsc": {
+        "status": "armed",
+        "mmsi": "123456789"
+      }
+    },
+    "ais": {
+      "name": "Automatic Identification System",
+      "status": "active",
+      "mmsi": "123456789",
+      "vesselName": "TRAINING VESSEL",
+      "callSign": "SHIP01",
+      "imo": "1234567",
+      "vesselType": "Cargo",
+      "nearbyVessels": [
+        {
+          "mmsi": "987654321",
+          "name": "MERCHANT VESSEL",
+          "distance": 2.5,
+          "bearing": 45,
+          "course": 180,
+          "speed": 12,
+          "cpa": 0.8,
+          "tcpa": 12
+        }
+      ]
+    },
+    "gmdss": {
+      "name": "Global Maritime Distress System",
+      "seaArea": "A2",
+      "equipment": {
+        "epirb": { "status": "armed", "battery": 95 },
+        "sart": { "status": "standby", "battery": 88 },
+        "navtex": { "status": "active", "messages": 3 }
+      }
+    }
+  },
+  "engineTelegraph": {
+    "bridgeOrder": "stop",
+    "engineResponse": "stop",
+    "orders": [
+      "full_astern",
+      "half_astern",
+      "slow_astern",
+      "stop",
+      "slow_ahead",
+      "half_ahead",
+      "full_ahead"
+    ]
+  },
+  "helmControl": {
+    "rudderAngle": 0,
+    "rudderOrder": 0,
+    "steeringMode": "hand",
+    "modes": ["hand", "auto", "emergency"]
+  },
+  "alarmSystems": {
+    "generalAlarm": false,
+    "fireAlarm": false,
+    "generalCall": false,
+    "abandonShip": false,
+    "engineAlarm": false,
+    "navigationAlarm": false,
+    "activeAlarms": []
+  },
+  "weatherData": {
+    "windSpeed": 8,
+    "windDirection": 245,
+    "waveHeight": 1.5,
+    "visibility": 10,
+    "seaState": 3,
+    "barometricPressure": 1013,
+    "temperature": 15,
+    "humidity": 75
+  },
+  "routePlanning": {
+    "waypoints": [
+      {
+        "id": 1,
+        "name": "Departure",
+        "latitude": 55.7558,
+        "longitude": 12.4784,
+        "eta": "2025-06-22T20:12:00Z"
+      },
+      {
+        "id": 2,
+        "name": "WP1",
+        "latitude": 55.8000,
+        "longitude": 12.5000,
+        "eta": "2025-06-22T21:30:00Z"
+      },
+      {
+        "id": 3,
+        "name": "Arrival",
+        "latitude": 56.0000,
+        "longitude": 12.6000,
+        "eta": "2025-06-22T23:00:00Z"
+      }
+    ],
+    "plannedSpeed": 12,
+    "totalDistance": 25.6,
+    "estimatedDuration": 128
+  }
+}
