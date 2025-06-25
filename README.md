@@ -1,50 +1,79 @@
-# React + TypeScript + Vite
+# Ship Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern 3D ship simulation built with React, TypeScript, Three.js, and Vite. This project provides an interactive 3D environment for ship navigation and simulation.
 
-Currently, two official plugins are available:
+![Ship Simulator Screenshot](./public/screenshot.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- 3D ship rendering using Three.js
+- Interactive controls for ship navigation
+- Realistic water simulation
+- Day/Night cycle
+- Responsive design that works on desktop
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 🛠️ Prerequisites
 
-- Configure the top-level `parserOptions` property like this:
+- Node.js (v16 or later)
+- pnpm (recommended) or npm
+- Git
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 🛠 Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/ship-simulator.git
+   cd ship-simulator
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   # or
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   pnpm dev
+   # or
+   npm run dev
+   ```
+
+4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## 🚀 Deployment
+
+To create a production build:
+
+```bash
+pnpm build
+# or
+npm run build
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+The build artifacts will be stored in the `dist/` directory.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## 🧪 Testing
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+To run the linter:
+
+```bash
+pnpm lint
+# or
+npm run lint
 ```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Three.js](https://threejs.org/) for 3D rendering
+- [React Three Fiber](https://github.com/pmndrs/react-three-fiber) for React bindings
+- [Vite](https://vitejs.dev/) for the build tooling

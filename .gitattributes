@@ -1,0 +1,39 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Source files
+*.js text diff=javascript
+*.jsx text diff=javascript
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.css text
+*.scss text
+*.json text
+*.html text
+*.md text
+*.yml text
+*.yaml text
+
+# Binary files that should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.mp3 binary
+*.wav binary
+*.mp4 binary
+*.webm binary
+*.mov binary
+*.pdf binary
+
+# Prevent line ending changes in Windows that would cause huge diffs
+*.sln text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.bat text eol=crlf

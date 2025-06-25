@@ -1,0 +1,10 @@
+# These are supported funding model platforms
+
+github: [your-github-username] # Replace with your GitHub username
+twitter: # Replace with your Twitter username without the @
+patreon: # Replace with your Patreon username
+open_collective: # Replace with your Open Collective username
+ko_fi: # Replace with your Ko-fi username
+tidelift: # Replace with your Tidelift platform-name/package-name
+github: [your-github-username, another-username] # Multiple GitHub sponsors
+custom: ['https://your-custom-url.com', 'another-custom-url']

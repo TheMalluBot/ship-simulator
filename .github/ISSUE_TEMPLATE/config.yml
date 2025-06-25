@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Ask a Question
+    url: https://github.com/your-username/ship-simulator/discussions
+    about: Ask and answer questions about using the project
+  - name: 💬 Discussions
+    url: https://github.com/your-username/ship-simulator/discussions
+    about: Start a discussion about the project
+  - name: 📜 Documentation
+    url: https://github.com/your-username/ship-simulator#readme
+    about: Check the project documentation
