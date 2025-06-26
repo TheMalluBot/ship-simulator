@@ -18,6 +18,7 @@ interface SystemCardProps {
 }
 
 function SystemCard({ system, isSelected, isHighlighted, onClick }: SystemCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const getSystemIcon = (system: MaritimeSystem) => {
     const iconMap = {
       'power-chief-101': Zap,
@@ -52,8 +53,10 @@ function SystemCard({ system, isSelected, isHighlighted, onClick }: SystemCardPr
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "maritime-system-card",
+        "maritime-system-card relative",
         isSelected && "selected",
         isHighlighted && "ring-2 ring-yellow-400 ring-offset-2 ring-offset-slate-800"
       )}
@@ -109,6 +112,24 @@ function SystemCard({ system, isSelected, isHighlighted, onClick }: SystemCardPr
           className="absolute inset-0 border-2 border-yellow-400 rounded-lg pointer-events-none"
         />
       )}
+      
+      {/* Interactive Hover Effect */}
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute right-2 top-2 bg-slate-700/80 p-1 rounded-lg"
+          >
+            <div className="flex space-x-1">
+              <div className="text-blue-300 text-xs px-2 py-0.5 rounded bg-blue-500/20">
+                Details
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -190,6 +211,8 @@ export function SystemDirectory() {
     safety: true,
     auxiliary: true
   });
+  const [error, setError] = useState<string | null>(null);
+  const [isLocalLoading, setIsLocalLoading] = useState(false);
 
   const categories = [
     {
@@ -231,19 +254,64 @@ export function SystemDirectory() {
     }));
   };
 
-  const filteredCategories = categories.map(category => ({
-    ...category,
-    systems: category.systems.filter(system =>
-      system.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      system.number.includes(searchTerm)
-    )
-  })).filter(category => category.systems.length > 0);
+  const filteredCategories = React.useMemo(() => {
+    try {
+      return categories.map(category => ({
+        ...category,
+        systems: category.systems.filter(system =>
+          system.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          system.number.includes(searchTerm)
+        )
+      })).filter(category => category.systems.length > 0);
+    } catch (err) {
+      setError(`Error filtering systems: ${err instanceof Error ? err.message : String(err)}`);
+      return [];
+    }
+  }, [categories, searchTerm]);
 
   const totalSystems = state.systems.length;
   const runningSystems = state.systems.filter(s => s.status === 'running').length;
 
+  // Handle any errors that might occur when interacting with systems
+  React.useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000); // Auto-dismiss after 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  // Simulate a local loading state when filtering changes
+  React.useEffect(() => {
+    setIsLocalLoading(true);
+    const timer = setTimeout(() => setIsLocalLoading(false), 200);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+  
   return (
     <div className="h-full flex flex-col">
+      {/* Error message display */}
+      <AnimatePresence>
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 mx-4 mt-2 rounded-lg"
+          >
+            <div className="flex items-center space-x-2">
+              <ShieldAlert className="h-4 w-4" />
+              <span>{error}</span>
+              <button 
+                onClick={() => setError(null)} 
+                className="ml-auto text-red-200 hover:text-white"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Directory Header */}
       <div className="p-4 border-b border-slate-700/50">
         <div className="flex items-center justify-between mb-4">
@@ -263,50 +331,94 @@ export function SystemDirectory() {
             type="text"
             placeholder="Search systems..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              try {
+                setSearchTerm(e.target.value);
+              } catch (err) {
+                setError(`Search error: ${err instanceof Error ? err.message : String(err)}`);
+              }
+            }}
             className="w-full pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           />
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-2 mt-3">
-          <div className="text-center p-2 bg-green-500/20 border border-green-500/30 rounded-lg">
+          <motion.div 
+            whileHover={{ scale: 1.03 }}
+            className="text-center p-2 bg-green-500/20 border border-green-500/30 rounded-lg"
+          >
             <div className="text-lg font-bold text-green-400">{runningSystems}</div>
             <div className="text-xs text-green-300">Running</div>
-          </div>
-          <div className="text-center p-2 bg-slate-700/50 border border-slate-600 rounded-lg">
+          </motion.div>
+          <motion.div 
+            whileHover={{ scale: 1.03 }}
+            className="text-center p-2 bg-slate-700/50 border border-slate-600 rounded-lg"
+          >
             <div className="text-lg font-bold text-slate-300">{totalSystems - runningSystems}</div>
             <div className="text-xs text-slate-400">Stopped</div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* System Categories */}
       <div className="flex-1 p-4 overflow-y-auto">
-        {state.isLoading ? (
-          <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400" />
+        {state.isLoading || isLocalLoading ? (
+          <div className="flex flex-col items-center justify-center h-64 space-y-4">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="rounded-full h-12 w-12 border-t-2 border-r-2 border-blue-400"
+            />
+            <p className="text-slate-400 text-sm">Loading ship systems...</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-2"
+          >
             {filteredCategories.map((category) => (
-              <SystemCategory
+              <motion.div
                 key={category.id}
-                title={category.title}
-                systems={category.systems}
-                icon={category.icon}
-                isExpanded={expandedCategories[category.id]}
-                onToggle={() => toggleCategory(category.id)}
-              />
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <SystemCategory
+                  title={category.title}
+                  systems={category.systems}
+                  icon={category.icon}
+                  isExpanded={expandedCategories[category.id]}
+                  onToggle={() => {
+                    try {
+                      toggleCategory(category.id);
+                    } catch (err) {
+                      setError(`Failed to toggle category: ${err instanceof Error ? err.message : String(err)}`);
+                    }
+                  }}
+                />
+              </motion.div>
             ))}
             
             {filteredCategories.length === 0 && (
-              <div className="text-center py-8 text-slate-400">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-8 text-slate-400"
+              >
                 <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>No systems found matching "<span className="text-white">{searchTerm}</span>"</p>
-              </div>
+                <button 
+                  onClick={() => setSearchTerm('')}
+                  className="mt-4 px-4 py-2 bg-blue-500/30 hover:bg-blue-500/50 rounded-lg text-blue-200 text-sm transition-colors"
+                >
+                  Clear search
+                </button>
+              </motion.div>
             )}
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

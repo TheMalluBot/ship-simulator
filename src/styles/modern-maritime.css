@@ -183,6 +183,89 @@
   @apply maritime-card;
 }
 
+/* Maritime Three Column Layout - Responsive */
+.maritime-three-column-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas: 
+    "main"
+    "directory"
+    "learning";
+  gap: 1rem;
+  min-height: calc(100vh - 4rem);
+  width: 100%;
+  padding: 1rem;
+}
+
+/* Tablet layout (md) */
+@media (min-width: 768px) {
+  .maritime-three-column-layout {
+    grid-template-columns: 280px 1fr;
+    grid-template-areas: 
+      "directory main"
+      "learning main";
+  }
+}
+
+/* Desktop layout (lg) */
+@media (min-width: 1024px) {
+  .maritime-three-column-layout {
+    grid-template-columns: 280px 1fr 320px;
+    grid-template-areas: "directory main learning";
+  }
+}
+
+.maritime-directory-panel {
+  grid-area: directory;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  height: auto;
+  max-height: none;
+}
+
+.maritime-main-panel {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.maritime-learning-panel {
+  grid-area: learning;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  height: auto;
+  max-height: none;
+}
+
+.maritime-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(71, 85, 105, 0.5);
+}
+
+.maritime-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
 /* Maritime Gauge Styles */
 .maritime-gauge {
   @apply relative inline-block;

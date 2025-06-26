@@ -52,20 +52,61 @@ class GeneratorSimulator {
 
   /**
    * Starts the generator asynchronously, respecting startup time.
-   * Currently this is only a stub – it flips `running` to true immediately.
+   * Simulates a realistic startup sequence with status transitions.
    */
   async start(): Promise<boolean> {
-    if (this.state.running) return true;
-    // TODO: Add realistic delayed startup sequence.
-    this.state = { ...this.state, running: true, rpm: 720, load: 10 };
-    return true;
+    if (this.state.running || this.state.status === 'starting') return true;
+    
+    // Update status to starting
+    this.state = { ...this.state, status: 'starting' };
+    
+    // Simulate startup sequence with realistic timing
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Set running parameters based on generator type
+        const ratedFrequency = 60; // Hz
+        const nominalVoltage = this.cfg.type === 'emergency' ? 440 : 480; // V
+        const startupTemp = this.state.temperature + 15;
+        
+        this.state = { 
+          ...this.state, 
+          running: true, 
+          status: 'running',
+          rpm: this.cfg.type === 'turbo' ? 1800 : 720,
+          load: this.cfg.type === 'emergency' ? 15 : 25,
+          temperature: startupTemp,
+          voltage: nominalVoltage,
+          frequency: ratedFrequency,
+          faults: []
+        };
+        
+        resolve(true);
+      }, this.cfg.startupTimeMs);
+    });
   }
 
   async stop(): Promise<boolean> {
-    if (!this.state.running) return true;
-    // TODO: Add cooldown behaviour.
-    this.state = { ...this.state, running: false, rpm: 0, load: 0 };
-    return true;
+    if (!this.state.running || this.state.status === 'stopping') return true;
+    
+    // Update status to stopping
+    this.state = { ...this.state, status: 'stopping' };
+    
+    // Simulate shutdown sequence with realistic timing
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        this.state = { 
+          ...this.state, 
+          running: false, 
+          status: 'stopped',
+          rpm: 0, 
+          load: 0,
+          voltage: 0,
+          frequency: 0,
+          temperature: Math.max(25, this.state.temperature - 15)
+        };
+        resolve(true);
+      }, this.cfg.cooldownTimeMs / 3); // Using a shorter time for UI responsiveness
+    });
   }
 
   /** Merge arbitrary parameter updates coming from the UI */
@@ -80,11 +121,61 @@ export class SimulationEngine {
   private timeStepMs = 100; // default 10 Hz
 
   constructor() {
-    // Register initial sample generator so UI has something to bind to.
-    this.generators.set(
-      'dg1',
-      new GeneratorSimulator({ id: 'dg1', label: 'Diesel Gen-1', startupTimeMs: 15000, cooldownTimeMs: 120000 })
-    );
+    // Register all generators
+    
+    // Emergency Generator
+    this.generators.set('emergency-gen', new GeneratorSimulator({ 
+      id: 'emergency-gen', 
+      label: 'Emergency Generator', 
+      startupTimeMs: 10000, 
+      cooldownTimeMs: 60000,
+      type: 'emergency',
+      maxPower: 550,
+      fuelConsumption: 0.3
+    }));
+    
+    // Diesel Generators
+    this.generators.set('dg1', new GeneratorSimulator({ 
+      id: 'dg1', 
+      label: 'Diesel Generator #1', 
+      startupTimeMs: 15000, 
+      cooldownTimeMs: 120000,
+      type: 'diesel',
+      maxPower: 2400,
+      fuelConsumption: 0.42
+    }));
+    
+    this.generators.set('dg2', new GeneratorSimulator({ 
+      id: 'dg2', 
+      label: 'Diesel Generator #2', 
+      startupTimeMs: 15000, 
+      cooldownTimeMs: 120000,
+      type: 'diesel',
+      maxPower: 2400,
+      fuelConsumption: 0.42
+    }));
+    
+    // Shaft Generator
+    this.generators.set('shaft-gen', new GeneratorSimulator({ 
+      id: 'shaft-gen', 
+      label: 'Shaft Generator', 
+      startupTimeMs: 20000, 
+      cooldownTimeMs: 180000,
+      type: 'shaft',
+      maxPower: 1800,
+      fuelConsumption: 0.38
+    }));
+    
+    // Turbo Generator
+    this.generators.set('turbo-gen', new GeneratorSimulator({ 
+      id: 'turbo-gen', 
+      label: 'Turbo Generator', 
+      startupTimeMs: 25000, 
+      cooldownTimeMs: 200000,
+      type: 'turbo',
+      maxPower: 850,
+      fuelConsumption: 0.35
+    }));
 
     // Begin physics tick loop (currently just a placeholder)
     this.startLoop();
