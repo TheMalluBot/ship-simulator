@@ -1,4 +1,9 @@
+# Configuration for GitHub Issue Templates
+
+# Controls whether users can create blank issues or must use a template
 blank_issues_enabled: false
+
+# External links for users to get help or discuss issues
 contact_links:
   - name: ❓ Ask a Question
     url: https://github.com/your-username/ship-simulator/discussions
