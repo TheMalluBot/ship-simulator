@@ -54,7 +54,7 @@ export interface GeneratorData {
   id: string;
   name: string;
   type: 'shaft' | 'diesel' | 'turbo' | 'emergency';
-  status: 'running' | 'stopped' | 'starting' | 'error';
+  status: 'running' | 'stopped' | 'starting' | 'stopping' | 'error';
   power: number; // kW
   voltage: number; // V
   frequency: number; // Hz

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Monitor, Activity, Database, Zap, Droplets, Wind } from 'lucide-react';
+import React, { useState, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import { Monitor, Activity, Database, Zap, Droplets, Wind, AlertTriangle, ShieldAlert, XCircle, Loader } from 'lucide-react';
 import { useShipSimulator } from '../../contexts/ShipSimulatorContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface SystemStatusProps {
   name: string;
@@ -60,8 +60,95 @@ function SystemStatus({ name, status, value, unit, icon: Icon }: SystemStatusPro
   );
 }
 
-export function SystemOverview() {
+// Error message component for displaying operation errors
+function ErrorMessage({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  // Auto-dismiss after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onDismiss();
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 mb-4 rounded-lg"
+    >
+      <div className="flex items-center space-x-2">
+        <ShieldAlert className="h-4 w-4" />
+        <span className="flex-1">{message}</span>
+        <button 
+          onClick={onDismiss} 
+          className="text-red-200 hover:text-white"
+        >
+          <XCircle className="h-4 w-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// Loading indicator component
+function LoadingIndicator({ message }: { message: string }) {
+  return (
+    <div className="flex items-center space-x-3 bg-blue-500/20 border border-blue-500 text-blue-200 px-4 py-2 mb-4 rounded-lg">
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        className="h-4 w-4 border-t-2 border-r-2 border-blue-400 rounded-full"
+      />
+      <span>{message}</span>
+    </div>
+  );
+}
+
+// Error boundary for SystemOverview component
+class SystemOverviewErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Error in SystemOverview component:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden p-6">
+          <div className="text-center py-8">
+            <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-white mb-2">System Overview Error</h3>
+            <p className="text-slate-300 mb-6">We encountered a problem with the system overview display.</p>
+            <button
+              onClick={() => this.setState({ hasError: false })}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Main component content
+function SystemOverviewContent() {
   const { state } = useShipSimulator();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const { systems } = state.engineRoom;
 
   const systemsData = [
@@ -109,17 +196,73 @@ export function SystemOverview() {
     },
   ];
 
+  const refreshSystemData = () => {
+    try {
+      setRefreshing(true);
+      setIsLoading(true);
+      
+      // Simulate network delay for demonstration purposes
+      setTimeout(() => {
+        // In a real implementation, this would fetch fresh data
+        setRefreshing(false);
+        setIsLoading(false);
+      }, 1200);
+    } catch (err) {
+      setError(`Failed to refresh system data: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setRefreshing(false);
+      setIsLoading(false);
+    }
+  };
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      refreshSystemData();
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+      {/* Error and Loading States */}
+      <AnimatePresence>
+        {error && (
+          <ErrorMessage message={error} onDismiss={() => setError(null)} />
+        )}
+      </AnimatePresence>
+      
+      {isLoading && (
+        <LoadingIndicator message="Updating system overview data..." />
+      )}
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-700 to-slate-800 p-4 border-b border-slate-600">
-        <h2 className="text-lg font-bold text-white flex items-center space-x-2">
-          <div className="bg-indigo-600 p-2 rounded-lg">
-            <Activity className="h-5 w-5 text-white" />
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-white flex items-center space-x-2">
+              <div className="bg-indigo-600 p-2 rounded-lg">
+                <Activity className="h-5 w-5 text-white" />
+              </div>
+              <span>System Overview</span>
+            </h2>
+            <p className="text-slate-300 text-sm mt-1">Engine room systems status</p>
           </div>
-          <span>System Overview</span>
-        </h2>
-        <p className="text-slate-300 text-sm mt-1">Engine room systems status</p>
+          <button 
+            onClick={refreshSystemData}
+            disabled={refreshing}
+            className="bg-slate-700 hover:bg-slate-600 text-slate-300 p-2 rounded-lg transition-colors"
+          >
+            {refreshing ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="h-5 w-5 border-t-2 border-r-2 border-slate-400 rounded-full"
+              />
+            ) : (
+              <Activity className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Systems Grid */}

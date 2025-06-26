@@ -1,9 +1,93 @@
-import React from 'react';
-import { Trophy, AlertTriangle, Clock, CheckCircle, X, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect, Component, ErrorInfo, ReactNode } from 'react';
+import { Trophy, AlertTriangle, Clock, CheckCircle, X, TrendingUp, ShieldAlert, XCircle, Loader, RefreshCw } from 'lucide-react';
 import { useProceduralTraining } from '../../contexts/ProceduralTrainingContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export function PerformanceAssessment() {
+// Error message component for displaying operation errors
+function ErrorMessage({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  // Auto-dismiss after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onDismiss();
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 mb-4 rounded-lg"
+    >
+      <div className="flex items-center space-x-2">
+        <ShieldAlert className="h-4 w-4" />
+        <span className="flex-1">{message}</span>
+        <button 
+          onClick={onDismiss} 
+          className="text-red-200 hover:text-white"
+        >
+          <XCircle className="h-4 w-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// Loading indicator component
+function LoadingIndicator({ message }: { message: string }) {
+  return (
+    <div className="flex items-center space-x-3 bg-blue-500/20 border border-blue-500 text-blue-200 px-4 py-2 mb-4 rounded-lg">
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        className="h-4 w-4 border-t-2 border-r-2 border-blue-400 rounded-full"
+      />
+      <span>{message}</span>
+    </div>
+  );
+}
+
+// Error boundary for PerformanceAssessment component
+class PerformanceAssessmentErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Error in PerformanceAssessment component:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden p-6">
+          <div className="text-center py-8">
+            <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-white mb-2">Performance Assessment Error</h3>
+            <p className="text-slate-300 mb-6">We encountered a problem with the performance assessment display.</p>
+            <button
+              onClick={() => this.setState({ hasError: false })}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Main component content
+function PerformanceAssessmentContent() {
   const { 
     state, 
     getPerformanceAssessment, 
@@ -11,6 +95,10 @@ export function PerformanceAssessment() {
     getMistakeCount, 
     getCriticalMistakeCount 
   } = useProceduralTraining();
+  
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const performance = getPerformanceAssessment();
   const mistakeCount = getMistakeCount();
@@ -39,14 +127,70 @@ export function PerformanceAssessment() {
     }
   };
 
+  const refreshPerformanceData = () => {
+    try {
+      setRefreshing(true);
+      setIsLoading(true);
+      
+      // Simulate network delay for demonstration purposes
+      setTimeout(() => {
+        // In a real implementation, this would fetch fresh data
+        setRefreshing(false);
+        setIsLoading(false);
+      }, 1200);
+    } catch (err) {
+      setError(`Failed to refresh performance data: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setRefreshing(false);
+      setIsLoading(false);
+    }
+  };
+
+  // Initial data loading simulation
+  useEffect(() => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+  }, []);
+
   return (
     <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
+      {/* Error and Loading States */}
+      <AnimatePresence>
+        {error && (
+          <ErrorMessage message={error} onDismiss={() => setError(null)} />
+        )}
+      </AnimatePresence>
+      
+      {isLoading && (
+        <LoadingIndicator message="Updating performance assessment data..." />
+      )}
       <div className="bg-gradient-to-r from-indigo-900 to-purple-800 p-4 rounded-lg mb-6 border border-indigo-600">
-        <h2 className="text-white font-bold text-xl flex items-center space-x-2">
-          <Trophy className="h-6 w-6 text-indigo-400" />
-          <span>Performance Assessment</span>
-        </h2>
-        <p className="text-indigo-200 text-sm mt-1">Professional maritime training evaluation</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-white font-bold text-xl flex items-center space-x-2">
+              <Trophy className="h-6 w-6 text-indigo-400" />
+              <span>Performance Assessment</span>
+            </h2>
+            <p className="text-indigo-200 text-sm mt-1">Professional maritime training evaluation</p>
+          </div>
+          <button 
+            onClick={refreshPerformanceData}
+            disabled={refreshing}
+            className="bg-indigo-800 hover:bg-indigo-700 text-indigo-200 p-2 rounded-lg transition-colors"
+            title="Refresh performance data"
+          >
+            {refreshing ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="h-5 w-5 border-t-2 border-r-2 border-indigo-400 rounded-full"
+              />
+            ) : (
+              <RefreshCw className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Real-time Metrics */}

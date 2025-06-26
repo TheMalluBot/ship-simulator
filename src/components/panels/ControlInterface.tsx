@@ -1,9 +1,9 @@
-import React, { useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Power, Play, Square, RotateCw, Thermometer, Zap,
   Gauge, Clock, Settings, AlertTriangle, CheckCircle,
-  ArrowUp, ArrowDown, RefreshCw
+  ArrowUp, ArrowDown, RefreshCw, XCircle, Info, ShieldAlert
 } from 'lucide-react';
 import { useModernMaritime } from '../../contexts/ModernMaritimeContext';
 import { GeneratorData, ModernGaugeProps } from '../../types/maritime';
@@ -111,9 +111,10 @@ interface GeneratorCardProps {
   onStart: () => void;
   onStop: () => void;
   onSelect: () => void;
+  isLoading?: boolean;
 }
 
-function GeneratorCard({ generator, onStart, onStop, onSelect }: GeneratorCardProps) {
+function GeneratorCard({ generator, onStart, onStop, onSelect, isLoading = false }: GeneratorCardProps) {
   const getTypeColor = (type: GeneratorData['type']) => {
     switch (type) {
       case 'emergency': return 'border-red-500 bg-red-500/10';
@@ -125,9 +126,16 @@ function GeneratorCard({ generator, onStart, onStop, onSelect }: GeneratorCardPr
   };
   
   const getStatusIcon = () => {
+    // Show loading spinner if explicitly loading
+    if (isLoading) {
+      return <RefreshCw className="h-4 w-4 text-blue-400 animate-spin" />;
+    }
+    
+    // Otherwise show status-based icon
     switch (generator.status) {
       case 'running': return <CheckCircle className="h-4 w-4 text-green-400" />;
       case 'starting': return <RefreshCw className="h-4 w-4 text-yellow-400 animate-spin" />;
+      case 'stopping': return <RefreshCw className="h-4 w-4 text-orange-400 animate-spin" />;
       case 'error': return <AlertTriangle className="h-4 w-4 text-red-400" />;
       default: return <Power className="h-4 w-4 text-slate-400" />;
     }
@@ -189,13 +197,13 @@ function GeneratorCard({ generator, onStart, onStop, onSelect }: GeneratorCardPr
       {/* Control Buttons */}
       <div className="flex space-x-2">
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={!isLoading ? { scale: 1.05 } : undefined}
+          whileTap={!isLoading ? { scale: 0.95 } : undefined}
           onClick={(e) => {
             e.stopPropagation();
-            onStart();
+            if (!isLoading) onStart();
           }}
-          disabled={!generator.canStart || generator.status === 'running'}
+          disabled={!generator.canStart || generator.status === 'running' || isLoading}
           className={cn(
             "flex-1 flex items-center justify-center space-x-1 py-2 px-3 rounded-lg font-medium text-sm transition-all",
             generator.canStart && generator.status !== 'running'
@@ -296,6 +304,43 @@ function PowerDistributionPanel() {
   );
 }
 
+// Error message component for displaying operation errors
+function ErrorMessage({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-2 mb-4 rounded-lg"
+    >
+      <div className="flex items-center space-x-2">
+        <ShieldAlert className="h-4 w-4" />
+        <span className="flex-1">{message}</span>
+        <button 
+          onClick={onDismiss} 
+          className="text-red-200 hover:text-white"
+        >
+          <XCircle className="h-4 w-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// Loading indicator component
+function LoadingIndicator({ message }: { message: string }) {
+  return (
+    <div className="flex items-center space-x-3 bg-blue-500/20 border border-blue-500 text-blue-200 px-4 py-2 mb-4 rounded-lg">
+      <motion.div 
+        animate={{ rotate: 360 }}
+        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        className="h-4 w-4 border-t-2 border-r-2 border-blue-400 rounded-full"
+      />
+      <span>{message}</span>
+    </div>
+  );
+}
+
 export function ControlInterface() {
   const { 
     state,
@@ -305,96 +350,202 @@ export function ControlInterface() {
     completeStep
   } = useModernMaritime();
   
-  const handleGeneratorStart = (generatorId: string) => {
-    const generator = state.generators.find(g => g.id === generatorId);
-    if (!generator || !generator.canStart) {
-      recordMistake('invalid_action', `Cannot start ${generator?.name || 'generator'}`);
-      return;
+  // Error and loading states
+  const [error, setError] = useState<string | null>(null);
+  const [loadingGenerators, setLoadingGenerators] = useState<Record<string, boolean>>({});
+  const [operationInProgress, setOperationInProgress] = useState(false);
+  
+  // Auto-dismiss error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
     }
-    
-    // Update generator status to starting
-    // The context's updateGenerator method already integrates with the simulation engine
-    updateGenerator(generatorId, { status: 'starting' });
-    
-    // The simulation engine will handle the transition from 'starting' to 'running'
-    // and the context will update the UI accordingly
-    
-    // We still need to update related systems when the generator is started
-    // This should be handled in the simulation engine, but we'll set a listener here
-    const checkGeneratorStatus = setInterval(() => {
-      const updatedGenerator = state.generators.find(g => g.id === generatorId);
-      if (updatedGenerator?.status === 'running') {
-        clearInterval(checkGeneratorStatus);
-        
-        // Update related system status
-        if (generatorId === 'emergency-gen') {
-          updateSystemStatus('emergency-power', 'running');
-        } else if (generatorId.startsWith('dg')) {
-          updateSystemStatus('power-chief-101', 'running');
-        }
-        
-        // Check if this completes a mission step
-        if (state.currentStep?.targetAction === 'start' && 
-            state.currentStep?.targetSystem === 'emergency-power' && 
-            generatorId === 'emergency-gen') {
-          completeStep(state.currentStep.id);
-        }
+  }, [error]);
+
+  const handleGeneratorStart = (generatorId: string) => {
+    try {
+      const generator = state.generators.find(g => g.id === generatorId);
+      if (!generator || !generator.canStart) {
+        recordMistake('invalid_action', `Cannot start ${generator?.name || 'generator'}`);
+        setError(`Cannot start ${generator?.name || 'generator'}. Check system status.`);
+        return;
       }
-    }, 500); // Check every half second
-    
-    // Clean up interval if component unmounts
-    return () => clearInterval(checkGeneratorStatus);
+      
+      // Set loading state for this generator
+      setLoadingGenerators(prev => ({ ...prev, [generatorId]: true }));
+      setOperationInProgress(true);
+      
+      // Update generator status to starting
+      // The context's updateGenerator method already integrates with the simulation engine
+      updateGenerator(generatorId, { status: 'starting' });
+      
+      // The simulation engine will handle the transition from 'starting' to 'running'
+      // and the context will update the UI accordingly
+      
+      // We still need to update related systems when the generator is started
+      // This should be handled in the simulation engine, but we'll set a listener here
+      let attempts = 0;
+      const maxAttempts = 20; // 10 seconds max wait time
+      
+      const checkGeneratorStatus = setInterval(() => {
+        attempts++;
+        const updatedGenerator = state.generators.find(g => g.id === generatorId);
+        
+        // Success case
+        if (updatedGenerator?.status === 'running') {
+          clearInterval(checkGeneratorStatus);
+          setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+          setOperationInProgress(false);
+          
+          // Update related system status
+          if (generatorId === 'emergency-gen') {
+            updateSystemStatus('emergency-power', 'running');
+          } else if (generatorId.startsWith('dg')) {
+            updateSystemStatus('power-chief-101', 'running');
+          }
+          
+          // Check if this completes a mission step
+          if (state.currentStep?.targetAction === 'start' && 
+              state.currentStep?.targetSystem === 'emergency-power' && 
+              generatorId === 'emergency-gen') {
+            completeStep(state.currentStep.id);
+          }
+        }
+        // Error case
+        else if (updatedGenerator?.status === 'error') {
+          clearInterval(checkGeneratorStatus);
+          setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+          setOperationInProgress(false);
+          setError(`Failed to start ${updatedGenerator.name}. System reported an error.`);
+        }
+        // Timeout case
+        else if (attempts >= maxAttempts) {
+          clearInterval(checkGeneratorStatus);
+          setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+          setOperationInProgress(false);
+          setError(`Timeout while starting ${generator?.name || 'generator'}. Operation took too long.`);
+          
+          // Attempt to recover by setting status to stopped
+          updateGenerator(generatorId, { status: 'stopped' });
+        }
+      }, 500); // Check every half second
+      
+      // Clean up interval if component unmounts
+      return () => {
+        clearInterval(checkGeneratorStatus);
+        setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+        setOperationInProgress(false);
+      };
+    } catch (err) {
+      setError(`Error starting generator: ${err instanceof Error ? err.message : String(err)}`);
+      setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+      setOperationInProgress(false);
+    }
   };
   
   const handleGeneratorStop = (generatorId: string) => {
-    const generator = state.generators.find(g => g.id === generatorId);
-    if (!generator || !generator.canStop) {
-      recordMistake('invalid_action', `Cannot stop ${generator?.name || 'generator'}`);
-      return;
-    }
-    
-    // The context's updateGenerator method handles the simulation engine integration
-    updateGenerator(generatorId, { status: 'stopped' });
-    
-    // We need to update related systems when the generator is stopped
-    // This should ideally be handled in the simulation engine
-    const checkGeneratorStatus = setInterval(() => {
-      const updatedGenerator = state.generators.find(g => g.id === generatorId);
-      if (updatedGenerator?.status === 'stopped') {
-        clearInterval(checkGeneratorStatus);
+    try {
+      const generator = state.generators.find(g => g.id === generatorId);
+      if (!generator || !generator.canStop) {
+        recordMistake('invalid_action', `Cannot stop ${generator?.name || 'generator'}`);
+        setError(`Cannot stop ${generator?.name || 'generator'}. Check system status.`);
+        return;
+      }
+      
+      // Set loading state for this generator
+      setLoadingGenerators(prev => ({ ...prev, [generatorId]: true }));
+      setOperationInProgress(true);
+      
+      // The context's updateGenerator method handles the simulation engine integration
+      updateGenerator(generatorId, { status: 'stopping' });
+      
+      // We need to update related systems when the generator is stopped
+      // This should ideally be handled in the simulation engine
+      let attempts = 0;
+      const maxAttempts = 20; // 10 seconds max wait time
+      
+      const checkGeneratorStatus = setInterval(() => {
+        attempts++;
+        const updatedGenerator = state.generators.find(g => g.id === generatorId);
         
-        // Update related system status
-        if (generatorId === 'emergency-gen') {
-          updateSystemStatus('emergency-power', 'stopped');
-        } else if (generatorId.startsWith('dg')) {
-          // Check if any other diesel generators are running before stopping the power system
-          const otherRunningDGs = state.generators.filter(g => 
-            g.id.startsWith('dg') && 
-            g.id !== generatorId && 
-            g.status === 'running'
-          );
+        // Success case
+        if (updatedGenerator?.status === 'stopped') {
+          clearInterval(checkGeneratorStatus);
+          setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+          setOperationInProgress(false);
           
-          if (otherRunningDGs.length === 0) {
-            updateSystemStatus('power-chief-101', 'stopped');
+          // Update related system status
+          if (generatorId === 'emergency-gen') {
+            updateSystemStatus('emergency-power', 'stopped');
+          } else if (generatorId.startsWith('dg')) {
+            // Check if any other diesel generators are running before stopping the power system
+            const otherRunningDGs = state.generators.filter(g => 
+              g.id.startsWith('dg') && 
+              g.id !== generatorId && 
+              g.status === 'running'
+            );
+            
+            if (otherRunningDGs.length === 0) {
+              updateSystemStatus('power-chief-101', 'stopped');
+            }
           }
         }
-      }
-    }, 500); // Check every half second
-    
-    // Clean up interval if component unmounts
-    return () => clearInterval(checkGeneratorStatus);
+        // Error case
+        else if (updatedGenerator?.status === 'error') {
+          clearInterval(checkGeneratorStatus);
+          setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+          setOperationInProgress(false);
+          setError(`Failed to stop ${updatedGenerator.name}. System reported an error.`);
+        }
+        // Timeout case
+        else if (attempts >= maxAttempts) {
+          clearInterval(checkGeneratorStatus);
+          setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+          setOperationInProgress(false);
+          setError(`Timeout while stopping ${generator?.name || 'generator'}. Operation took too long.`);
+          
+          // Force update to stopped status for UI consistency
+          updateGenerator(generatorId, { status: 'stopped' });
+        }
+      }, 500); // Check every half second
+      
+      // Clean up interval if component unmounts
+      return () => {
+        clearInterval(checkGeneratorStatus);
+        setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+        setOperationInProgress(false);
+      };
+    } catch (err) {
+      setError(`Error stopping generator: ${err instanceof Error ? err.message : String(err)}`);
+      setLoadingGenerators(prev => ({ ...prev, [generatorId]: false }));
+      setOperationInProgress(false);
+    }
   };
   
   const handleGeneratorSelect = (generatorId: string) => {
-    // Update generator selection
-    state.generators.forEach(gen => {
-      updateGenerator(gen.id, { isSelected: gen.id === generatorId });
-    });
+    try {
+      // Update generator selection
+      state.generators.forEach(gen => {
+        updateGenerator(gen.id, { isSelected: gen.id === generatorId });
+      });
+    } catch (err) {
+      setError(`Error selecting generator: ${err instanceof Error ? err.message : String(err)}`);
+    }
   };
+  
+  // Function to dismiss error messages
+  const dismissError = () => setError(null);
   
   if (!state.selectedSystem) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex flex-col items-center justify-center">
+        <AnimatePresence>
+          {error && (
+            <ErrorMessage message={error} onDismiss={dismissError} />
+          )}
+        </AnimatePresence>
+        
         <div className="text-center">
           <Settings className="h-16 w-16 text-slate-400 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-white mb-2">Select a System</h2>
@@ -410,6 +561,20 @@ export function ControlInterface() {
   if (state.selectedSystem.category === 'power') {
     return (
       <div className="space-y-6">
+        {/* Error Messages */}
+        <AnimatePresence>
+          {error && (
+            <ErrorMessage message={error} onDismiss={dismissError} />
+          )}
+        </AnimatePresence>
+        
+        {/* Global Loading Indicator */}
+        <AnimatePresence>
+          {operationInProgress && (
+            <LoadingIndicator message="Operation in progress..." />
+          )}
+        </AnimatePresence>
+        
         {/* Power Distribution Overview */}
         <PowerDistributionPanel />
         
@@ -428,6 +593,7 @@ export function ControlInterface() {
                 onStart={() => handleGeneratorStart(generator.id)}
                 onStop={() => handleGeneratorStop(generator.id)}
                 onSelect={() => handleGeneratorSelect(generator.id)}
+                isLoading={!!loadingGenerators[generator.id]}
               />
             ))}
           </div>
@@ -454,6 +620,20 @@ export function ControlInterface() {
   // Default system control interface
   return (
     <div className="space-y-6">
+      {/* Error Messages */}
+      <AnimatePresence>
+        {error && (
+          <ErrorMessage message={error} onDismiss={dismissError} />
+        )}
+      </AnimatePresence>
+      
+      {/* Global Loading Indicator */}
+      <AnimatePresence>
+        {operationInProgress && (
+          <LoadingIndicator message="Operation in progress..." />
+        )}
+      </AnimatePresence>
+      
       <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-white">
