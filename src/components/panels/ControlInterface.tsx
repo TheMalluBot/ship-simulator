@@ -298,14 +298,12 @@ function PowerDistributionPanel() {
 
 export function ControlInterface() {
   const { 
-    state
+    state,
+    updateGenerator,
+    updateSystemStatus,
+    recordMistake,
+    completeStep
   } = useModernMaritime();
-  
-  // Placeholder functions for missing methods
-  const updateGenerator = (id: string, updates: any) => console.log('Update generator:', id, updates);
-  const updateSystemStatus = (id: string, status: string) => console.log('Update system status:', id, status);
-  const recordMistake = (type: string, message: string) => console.log('Record mistake:', type, message);
-  const completeStep = (stepId: string) => console.log('Complete step:', stepId);
   
   const handleGeneratorStart = (generatorId: string) => {
     const generator = state.generators.find(g => g.id === generatorId);
@@ -315,30 +313,37 @@ export function ControlInterface() {
     }
     
     // Update generator status to starting
+    // The context's updateGenerator method already integrates with the simulation engine
     updateGenerator(generatorId, { status: 'starting' });
     
-    // Simulate startup sequence
-    setTimeout(() => {
-      updateGenerator(generatorId, { 
-        status: 'running',
-        load: generatorId === 'emergency-gen' ? 15 : 25,
-        temperature: generator.temperature + 20
-      });
-      
-      // Update related system status
-      if (generatorId === 'emergency-gen') {
-        updateSystemStatus('emergency-power', 'running');
-      } else if (generatorId.startsWith('dg')) {
-        updateSystemStatus('power-chief-101', 'running');
+    // The simulation engine will handle the transition from 'starting' to 'running'
+    // and the context will update the UI accordingly
+    
+    // We still need to update related systems when the generator is started
+    // This should be handled in the simulation engine, but we'll set a listener here
+    const checkGeneratorStatus = setInterval(() => {
+      const updatedGenerator = state.generators.find(g => g.id === generatorId);
+      if (updatedGenerator?.status === 'running') {
+        clearInterval(checkGeneratorStatus);
+        
+        // Update related system status
+        if (generatorId === 'emergency-gen') {
+          updateSystemStatus('emergency-power', 'running');
+        } else if (generatorId.startsWith('dg')) {
+          updateSystemStatus('power-chief-101', 'running');
+        }
+        
+        // Check if this completes a mission step
+        if (state.currentStep?.targetAction === 'start' && 
+            state.currentStep?.targetSystem === 'emergency-power' && 
+            generatorId === 'emergency-gen') {
+          completeStep(state.currentStep.id);
+        }
       }
-      
-      // Check if this completes a mission step
-      if (state.currentStep?.targetAction === 'start' && 
-          state.currentStep?.targetSystem === 'emergency-power' && 
-          generatorId === 'emergency-gen') {
-        completeStep(state.currentStep.id);
-      }
-    }, 3000);
+    }, 500); // Check every half second
+    
+    // Clean up interval if component unmounts
+    return () => clearInterval(checkGeneratorStatus);
   };
   
   const handleGeneratorStop = (generatorId: string) => {
@@ -348,11 +353,36 @@ export function ControlInterface() {
       return;
     }
     
-    updateGenerator(generatorId, { 
-      status: 'stopped',
-      load: 0,
-      temperature: Math.max(25, generator.temperature - 15)
-    });
+    // The context's updateGenerator method handles the simulation engine integration
+    updateGenerator(generatorId, { status: 'stopped' });
+    
+    // We need to update related systems when the generator is stopped
+    // This should ideally be handled in the simulation engine
+    const checkGeneratorStatus = setInterval(() => {
+      const updatedGenerator = state.generators.find(g => g.id === generatorId);
+      if (updatedGenerator?.status === 'stopped') {
+        clearInterval(checkGeneratorStatus);
+        
+        // Update related system status
+        if (generatorId === 'emergency-gen') {
+          updateSystemStatus('emergency-power', 'stopped');
+        } else if (generatorId.startsWith('dg')) {
+          // Check if any other diesel generators are running before stopping the power system
+          const otherRunningDGs = state.generators.filter(g => 
+            g.id.startsWith('dg') && 
+            g.id !== generatorId && 
+            g.status === 'running'
+          );
+          
+          if (otherRunningDGs.length === 0) {
+            updateSystemStatus('power-chief-101', 'stopped');
+          }
+        }
+      }
+    }, 500); // Check every half second
+    
+    // Clean up interval if component unmounts
+    return () => clearInterval(checkGeneratorStatus);
   };
   
   const handleGeneratorSelect = (generatorId: string) => {

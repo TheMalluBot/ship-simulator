@@ -13,12 +13,22 @@ export interface GeneratorConfig {
   label: string;
   startupTimeMs: number;
   cooldownTimeMs: number;
+  type?: 'emergency' | 'diesel' | 'shaft' | 'turbo';
+  maxPower?: number; // Maximum power output in kW
+  fuelConsumption?: number; // Fuel consumption rate
+  maintenanceInterval?: number; // Hours between maintenance
 }
 
 export interface GeneratorState {
   running: boolean;
   rpm: number;
   load: number; // kW or % depending on later choice
+  temperature: number; // °C
+  voltage: number; // V
+  frequency: number; // Hz
+  hours: number; // Running hours
+  faults: string[]; // Any active fault conditions
+  status?: 'stopped' | 'starting' | 'running' | 'stopping' | 'error';
 }
 
 class GeneratorSimulator {
@@ -27,7 +37,17 @@ class GeneratorSimulator {
 
   constructor(cfg: GeneratorConfig) {
     this.cfg = cfg;
-    this.state = { running: false, rpm: 0, load: 0 };
+    this.state = { 
+      running: false, 
+      rpm: 0, 
+      load: 0,
+      temperature: 25, // Ambient temperature in °C
+      voltage: 0,
+      frequency: 0,
+      hours: 0,
+      faults: [],
+      status: 'stopped'
+    };
   }
 
   /**
